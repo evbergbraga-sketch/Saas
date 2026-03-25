@@ -1947,7 +1947,8 @@ function notify(msg,type='success'){
 window.addEventListener('DOMContentLoaded',async()=>{
   const url=localStorage.getItem('fp_url');
   const key=localStorage.getItem('fp_key');
-return;}
+
+  if(!url||!key){ goLayer('setup'); return; }
 
   sb = createClient(url, key);
 
