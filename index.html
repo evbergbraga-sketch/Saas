@@ -18,10 +18,12 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:var(--font-body);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;}
+
+/* ══ LAYERS ══ */
 .layer{position:fixed;inset:0;display:none;z-index:10;}
 .layer.active{display:flex;}
 
-/* SETUP */
+/* ══ SETUP ══ */
 #layer-setup{background:var(--bg);align-items:center;justify-content:center;}
 .setup-box{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:40px;width:520px;max-height:90vh;overflow-y:auto;}
 .setup-logo{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--accent);margin-bottom:4px;}
@@ -30,6 +32,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);height:
 .step-num{width:24px;height:24px;border-radius:50%;background:var(--accent);color:#000;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .step-text{font-size:12px;line-height:1.6;color:var(--muted);}
 .step-text strong{color:var(--text);}
+.step-text code{background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:1px 6px;font-size:11px;color:var(--accent);font-family:monospace;}
 .setup-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;width:100%;margin-bottom:8px;}
 .setup-input:focus{border-color:var(--accent);}
 .setup-input::placeholder{color:var(--muted2);}
@@ -38,9 +41,11 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);height:
 .sql-toggle{font-size:12px;color:var(--blue);cursor:pointer;margin-top:14px;text-align:center;display:block;}
 .sql-panel{display:none;margin-top:12px;background:var(--bg);border:1px solid var(--border2);border-radius:10px;padding:14px;max-height:220px;overflow-y:auto;}
 .sql-panel pre{font-size:10.5px;color:#a8d8a8;font-family:monospace;line-height:1.6;white-space:pre-wrap;}
-.copy-sql-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;float:right;margin-bottom:6px;}
+.copy-sql-btn{background:var(--bg3);border:1px solid var(--border2);color:var(--muted);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;float:right;margin-bottom:6px;font-family:var(--font-body);}
+.setup-err{color:var(--red);font-size:12px;margin-top:6px;display:none;}
+.setup-ok{color:var(--green);font-size:12px;margin-top:6px;display:none;}
 
-/* LOGIN */
+/* ══ LOGIN ══ */
 #layer-login{background:var(--bg);align-items:center;justify-content:center;}
 .login-wrap{display:grid;grid-template-columns:1fr 1fr;width:880px;min-height:520px;border-radius:20px;overflow:hidden;border:1px solid var(--border2);}
 .login-left{background:linear-gradient(145deg,#111318,#0a0c10);padding:50px 44px;display:flex;flex-direction:column;justify-content:space-between;}
@@ -60,7 +65,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);height:
 .login-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;transition:border-color .15s;}
 .login-input:focus{border-color:var(--accent);}
 .login-input::placeholder{color:var(--muted2);}
-.login-select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;cursor:pointer;}
+.login-select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:11px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;cursor:pointer;transition:border-color .15s;}
+.login-select:focus{border-color:var(--accent);}
 .login-btn{background:var(--accent);color:#000;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-display);transition:background .15s;margin-top:4px;}
 .login-btn:hover{background:var(--accent2);}
 .login-err{color:var(--red);font-size:12px;margin-top:4px;display:none;}
@@ -71,9 +77,11 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);height:
 .rb-label{font-size:12px;font-weight:600;}
 .rb-desc{font-size:11px;color:var(--muted);}
 
-/* APP SHELL */
+/* ══ APP SHELL ══ */
 #layer-app{display:none;width:100%;height:100vh;flex-direction:row;}
 #layer-app.active{display:flex;}
+
+/* ══ SIDEBAR ══ */
 .sidebar{width:var(--sidebar-w);background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;height:100vh;}
 .logo{padding:22px 20px 18px;border-bottom:1px solid var(--border);}
 .logo-mark{font-family:var(--font-display);font-size:20px;font-weight:800;color:var(--accent);}
@@ -83,6 +91,7 @@ nav{flex:1;padding:14px 10px;overflow-y:auto;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--muted);transition:all .15s;margin-bottom:2px;border:1px solid transparent;}
 .nav-item:hover{background:var(--bg3);color:var(--text);}
 .nav-item.active{background:rgba(245,166,35,.12);color:var(--accent);border-color:rgba(245,166,35,.2);font-weight:500;}
+.nav-item.locked{opacity:.4;cursor:not-allowed;}
 .nav-item .icon{width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
 .sidebar-footer{padding:14px;border-top:1px solid var(--border);}
 .user-pill{display:flex;align-items:center;gap:10px;}
@@ -93,88 +102,100 @@ nav{flex:1;padding:14px 10px;overflow-y:auto;}
 .db-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* MAIN */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.topbar{padding:0 24px;height:58px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg2);}
+/* ══ MAIN ══ */
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
 .page-title{font-family:var(--font-display);font-size:18px;font-weight:700;}
 .topbar-right{display:flex;align-items:center;gap:10px;}
-.role-chip{font-size:10px;font-weight:600;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.5px;}
-.role-chip.admin{background:rgba(245,166,35,.15);color:var(--accent);border:1px solid rgba(245,166,35,.3);}
-.role-chip.atendente{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3);}
-.role-chip.investidor{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.3);}
-.content{flex:1;overflow-y:auto;padding:24px;}
+.role-chip{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;}
+.role-chip.admin{background:rgba(245,166,35,.15);color:var(--accent);}
+.role-chip.atendente{background:rgba(59,130,246,.15);color:var(--blue);}
+.role-chip.investidor{background:rgba(168,85,247,.15);color:var(--purple);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:var(--font-body);}
+.btn-primary{background:var(--accent);color:#000;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2);}
+.btn-ghost:hover{color:var(--text);background:var(--bg3);}
+.content{flex:1;overflow-y:auto;padding:28px;}
+
+/* ══ PAGES ══ */
 .page{display:none;}
 .page.active{display:block;}
 
-/* COMPONENTS */
-.btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:var(--font-body);transition:all .15s;}
-.btn-primary{background:var(--accent);color:#000;}
-.btn-primary:hover{background:var(--accent2);}
-.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border2);}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;}
-.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
-.card-title{font-family:var(--font-display);font-size:15px;font-weight:700;}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent-color,var(--accent));}
-.stat-icon{font-size:22px;margin-bottom:8px;}
-.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
-.stat-val{font-family:var(--font-display);font-size:28px;font-weight:800;}
-.stat-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+/* ══ STATS ══ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stats-grid.cols3{grid-template-columns:repeat(3,1fr);}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent-color,var(--accent));border-radius:2px 2px 0 0;}
+.stat-label{font-size:11px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;}
+.stat-val{font-family:var(--font-display);font-size:32px;font-weight:800;margin:6px 0 4px;}
+.stat-sub{font-size:12px;color:var(--muted);}
+.stat-icon{position:absolute;right:16px;top:16px;font-size:22px;opacity:.3;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-table{width:100%;border-collapse:collapse;}
-th{text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:10px 12px;border-bottom:1px solid var(--border);}
-td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.card-title{font-family:var(--font-display);font-size:14px;font-weight:700;}
+
+/* ══ TABLE ══ */
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);padding:0 12px 10px;border-bottom:1px solid var(--border);}
+td{padding:12px;border-bottom:1px solid var(--border);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:rgba(255,255,255,.02);}
-.empty-row td{color:var(--muted2);text-align:center;padding:20px;font-size:12px;}
-.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;}
-.badge-green{background:rgba(34,197,94,.12);color:#22c55e;}
-.badge-red{background:rgba(239,68,68,.12);color:#ef4444;}
-.badge-yellow{background:rgba(245,166,35,.12);color:#f5a623;}
-.badge-blue{background:rgba(59,130,246,.12);color:#3b82f6;}
-.badge-purple{background:rgba(168,85,247,.12);color:#a855f7;}
+.empty-row td{text-align:center;color:var(--muted2);padding:28px;font-size:13px;}
+
+/* ══ BADGES ══ */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;}
+.badge-green{background:rgba(34,197,94,.12);color:var(--green);}
+.badge-yellow{background:rgba(245,166,35,.12);color:var(--accent);}
+.badge-red{background:rgba(239,68,68,.12);color:var(--red);}
+.badge-blue{background:rgba(59,130,246,.12);color:var(--blue);}
+.badge-purple{background:rgba(168,85,247,.12);color:var(--purple);}
 .badge-gray{background:rgba(255,255,255,.06);color:var(--muted);}
-.vi{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+
+/* ══ INPUTS ══ */
+.input-group{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
+input,select,textarea{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+.input-flex{flex:1;}
+select{cursor:pointer;}
+label{font-size:12px;color:var(--muted);margin-bottom:4px;display:block;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:4px;}
+.form-group.full{grid-column:1/-1;}
+
+/* ══ VEHICLE ICON ══ */
+.vi{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;}
 .vi-car{background:rgba(59,130,246,.12);}
 .vi-moto{background:rgba(245,166,35,.12);}
-.input-group{display:flex;gap:10px;margin-bottom:16px;align-items:center;}
-.input-flex{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;}
-.input-flex:focus{border-color:var(--accent);}
-select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:9px 14px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;cursor:pointer;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.form-group{display:flex;flex-direction:column;gap:5px;}
-.form-group.full{grid-column:1/-1;}
-.form-group label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.form-group input,.form-group select,.form-group textarea{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:9px 12px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
 
-/* TIMELINE */
-.timeline{display:flex;flex-direction:column;gap:12px;max-height:400px;overflow-y:auto;}
-.tl-item{display:flex;gap:12px;align-items:flex-start;padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
-.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+/* ══ TIMELINE ══ */
+.timeline{position:relative;padding-left:24px;}
+.timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--border);}
+.tl-item{position:relative;margin-bottom:18px;}
+.tl-dot{position:absolute;left:-24px;width:14px;height:14px;border-radius:50%;border:2px solid var(--bg2);}
 .tl-dot.rental{background:var(--blue);}
 .tl-dot.maint{background:var(--accent);}
+.tl-dot.devol{background:var(--green);}
 .tl-title{font-size:13px;font-weight:500;}
 .tl-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-.tl-date{font-size:10px;color:var(--muted2);margin-top:4px;}
+.tl-date{font-size:10px;color:var(--muted2);margin-top:3px;}
 
-/* CALENDAR */
+/* ══ CALENDAR ══ */
 .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .cal-month{font-family:var(--font-display);font-size:16px;font-weight:700;}
-.cal-nav{background:var(--bg3);border:1px solid var(--border2);color:var(--text);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px;}
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.cal-dow{text-align:center;font-size:10px;color:var(--muted2);padding:6px 0;text-transform:uppercase;letter-spacing:.5px;}
-.cal-day{text-align:center;padding:8px 4px;border-radius:6px;font-size:13px;cursor:pointer;position:relative;min-height:36px;display:flex;flex-direction:column;align-items:center;}
+.cal-nav{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-size:14px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-dow{text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted2);padding:6px 0;}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;font-size:13px;transition:background .1s;gap:3px;}
 .cal-day:hover{background:var(--bg3);}
-.cal-day.today{background:rgba(245,166,35,.15);color:var(--accent);font-weight:600;}
+.cal-day.today{background:rgba(245,166,35,.15);color:var(--accent);font-weight:700;}
 .cal-day.other{color:var(--muted2);}
-.dots{display:flex;gap:2px;margin-top:2px;}
-.dot{width:5px;height:5px;border-radius:50%;}
+.dots{display:flex;gap:2px;}
+.dot{width:4px;height:4px;border-radius:50%;}
 
-/* CHAT */
-.chat-layout{display:grid;grid-template-columns:260px 1fr 200px;gap:16px;height:calc(100vh - 110px);}
+/* ══ CHAT ══ */
+.chat-layout{display:grid;grid-template-columns:260px 1fr 220px;gap:16px;height:calc(100vh - 130px);}
 .chat-list{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow-y:auto;}
 .chat-list-hdr{padding:14px 16px;border-bottom:1px solid var(--border);font-family:var(--font-display);font-size:14px;font-weight:700;}
 .chat-item{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;}
@@ -195,9 +216,9 @@ select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);p
 .qr{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:12px;cursor:pointer;margin-bottom:6px;transition:border-color .15s;line-height:1.4;color:var(--text);}
 .qr:hover{border-color:var(--accent);color:var(--accent);}
 .wpp-ok{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);font-size:12px;color:var(--green);margin-bottom:12px;}
-.wdot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0;}
+.wdot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
 
-/* CONTRACT */
+/* ══ CONTRACT ══ */
 .contract-preview{background:#fff;color:#111;padding:28px;border-radius:8px;font-size:12.5px;line-height:1.8;font-family:'Georgia',serif;}
 .contract-preview h2{text-align:center;font-size:14px;margin-bottom:4px;}
 .cp-sub{text-align:center;color:#555;margin-bottom:18px;font-size:11px;}
@@ -206,7 +227,7 @@ select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);p
 .sign-block{text-align:center;font-size:11px;color:#555;}
 .sign-line{border-top:1px solid #999;width:150px;margin:24px auto 5px;}
 
-/* MODAL */
+/* ══ MODAL ══ */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(4px);}
 .modal-overlay.show{display:flex;}
 .modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:28px;width:540px;max-height:85vh;overflow-y:auto;}
@@ -215,124 +236,243 @@ select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);p
 .modal-close{background:var(--bg3);border:none;color:var(--muted);width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
 .modal-footer{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
 
-/* USERS */
+/* ══ USERS PAGE ══ */
 .user-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px;}
 .uc-info{flex:1;}
 .uc-name{font-size:14px;font-weight:500;}
 .uc-email{font-size:12px;color:var(--muted);margin-top:2px;}
 .uc-actions{display:flex;gap:8px;align-items:center;}
 
-/* NOTIFY */
+/* ══ INVEST ══ */
+.invest-wall{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;text-align:center;}
+.invest-lock{font-size:48px;opacity:.3;}
+.invest-title{font-family:var(--font-display);font-size:22px;font-weight:700;}
+.invest-sub{color:var(--muted);font-size:14px;max-width:340px;line-height:1.6;}
+
+/* ══ ACCESS DENIED ══ */
+.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:12px;text-align:center;}
+.ad-icon{font-size:48px;opacity:.3;}
+.ad-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--red);}
+.ad-sub{color:var(--muted);font-size:13px;max-width:300px;line-height:1.6;}
+
+/* ══ NOTIFY ══ */
 .notify{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:999;animation:slideUp .3s ease;display:none;}
 .notify.success{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.4);color:var(--green);}
 .notify.error{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.4);color:var(--red);}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-.access-denied{display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:12px;text-align:center;}
-.ad-icon{font-size:48px;opacity:.3;}
-.ad-title{font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--red);}
-.ad-sub{color:var(--muted);font-size:13px;max-width:300px;line-height:1.6;}
+/* ══ MISC ══ */
+.tab-filter{display:flex;gap:6px;margin-bottom:16px;}
+.tab-btn{padding:6px 14px;border-radius:99px;font-size:12px;cursor:pointer;border:1px solid var(--border2);color:var(--muted);background:transparent;font-family:var(--font-body);transition:all .15s;}
+.tab-btn.active,.tab-btn:hover{background:var(--accent);color:#000;border-color:var(--accent);font-weight:600;}
 .scrollbar-thin::-webkit-scrollbar{width:4px;}
 .scrollbar-thin::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
-@media print{.sidebar,.topbar{display:none!important;}.content{padding:0!important;}.page{display:none!important;}.page#page-contratos{display:block!important;}}
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--border2) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px;height:14px;margin:5px 0;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 <body>
 
-<!-- SETUP -->
+<!-- ════════════════════════════════════════
+  LAYER 1 — SETUP (primeira vez)
+════════════════════════════════════════ -->
 <div id="layer-setup" class="layer active">
   <div class="setup-box">
     <div class="setup-logo">⬡ FleetPro</div>
     <div class="setup-sub">Configure o Supabase para começar</div>
-    <div class="setup-step"><div class="step-num">1</div><div class="step-text">Acesse <strong>supabase.com</strong> → abra seu projeto → vá em <strong>Project Settings → API Keys</strong> → aba <strong>Legacy anon, service_role</strong>.</div></div>
-    <div class="setup-step"><div class="step-num">2</div><div class="step-text">Copie a <strong>Project URL</strong> (em General) e a chave <strong>anon public</strong> que começa com <strong>eyJ</strong>.</div></div>
-    <div class="setup-step"><div class="step-num">3</div><div class="step-text">No <strong>SQL Editor</strong>, execute o SQL abaixo para criar tabelas e políticas. Depois cole as credenciais aqui.</div></div>
-    <span class="sql-toggle" onclick="toggleSQL()">▸ Mostrar SQL completo</span>
+
+    <div class="setup-step"><div class="step-num">1</div><div class="step-text">Acesse <strong>supabase.com</strong> → crie um projeto → vá em <strong>Project Settings → API</strong> e copie a <strong>Project URL</strong> e a chave <strong>anon public</strong>.</div></div>
+    <div class="setup-step"><div class="step-num">2</div><div class="step-text">No painel, vá em <strong>SQL Editor</strong> → cole e execute o SQL abaixo para criar todas as tabelas incluindo autenticação.</div></div>
+    <div class="setup-step"><div class="step-num">3</div><div class="step-text">Em <strong>Authentication → Providers</strong>, certifique-se que <strong>Email</strong> está habilitado. Cole as credenciais e conecte.</div></div>
+
+    <span class="sql-toggle" onclick="toggleSQL()">▸ Mostrar SQL completo (com auth + perfis)</span>
     <div class="sql-panel" id="sql-panel">
-      <button class="copy-sql-btn" onclick="copySQL()">📋 Copiar</button>
-      <pre id="sql-text">-- FLEETPRO — Execute no SQL Editor do Supabase
+      <button class="copy-sql-btn" onclick="copySQL()">📋 Copiar tudo</button>
+      <pre id="sql-text">-- ═══════════════════════════════════════════
+-- FLEETPRO — Schema completo com Auth + Perfis
+-- Execute no SQL Editor do Supabase
+-- ═══════════════════════════════════════════
+
 create extension if not exists "uuid-ossp";
-create table if not exists perfis (
-  id uuid primary key references auth.users(id) on delete cascade,
-  nome text not null, email text not null,
-  perfil text not null default 'atendente' check (perfil in ('admin','atendente','investidor')),
-  ativo boolean default true, created_at timestamptz default now()
-);
-create table if not exists clientes (
-  id uuid primary key default uuid_generate_v4(),
-  nome text not null, cpf text unique not null, email text, telefone text,
-  cnh text, cnh_validade date, endereco text, observacoes text, created_at timestamptz default now()
-);
-create table if not exists veiculos (
-  id uuid primary key default uuid_generate_v4(),
-  tipo text not null check (tipo in ('carro','moto')), marca text not null,
-  modelo text not null, placa text unique not null, ano int, cor text, cambio text,
-  km_atual int default 0, diaria numeric(10,2) not null,
-  status text default 'disponivel' check (status in ('disponivel','alugado','manutencao')),
-  observacoes text, created_at timestamptz default now()
-);
-create table if not exists locacoes (
-  id uuid primary key default uuid_generate_v4(),
-  veiculo_id uuid references veiculos(id), cliente_id uuid references clientes(id),
-  data_inicio date not null, data_fim date not null, km_inicial int, km_final int,
-  diaria numeric(10,2), total numeric(10,2),
-  status text default 'ativa' check (status in ('ativa','encerrada','cancelada')),
-  observacoes text, criado_por uuid references auth.users(id), created_at timestamptz default now()
-);
-create table if not exists manutencoes (
-  id uuid primary key default uuid_generate_v4(),
-  veiculo_id uuid references veiculos(id), tipo text not null, descricao text,
-  custo numeric(10,2), data_inicio date not null, data_fim date, oficina text,
-  status text default 'pendente' check (status in ('pendente','em_andamento','concluida')),
+
+-- ── PERFIS DE USUÁRIO (vinculado ao auth.users) ──
+create table perfis (
+  id        uuid primary key references auth.users(id) on delete cascade,
+  nome      text not null,
+  email     text not null,
+  perfil    text not null default 'atendente'
+            check (perfil in ('admin','atendente','investidor')),
+  ativo     boolean default true,
   created_at timestamptz default now()
 );
-alter table perfis enable row level security;
-alter table clientes enable row level security;
-alter table veiculos enable row level security;
-alter table locacoes enable row level security;
+
+-- ── CLIENTES ──
+create table clientes (
+  id           uuid primary key default uuid_generate_v4(),
+  nome         text not null,
+  cpf          text unique not null,
+  email        text,
+  telefone     text,
+  cnh          text,
+  cnh_validade date,
+  endereco     text,
+  observacoes  text,
+  created_at   timestamptz default now()
+);
+
+-- ── VEÍCULOS ──
+create table veiculos (
+  id          uuid primary key default uuid_generate_v4(),
+  tipo        text not null check (tipo in ('carro','moto')),
+  marca       text not null,
+  modelo      text not null,
+  placa       text unique not null,
+  ano         int,
+  cor         text,
+  cambio      text,
+  km_atual    int default 0,
+  diaria      numeric(10,2) not null,
+  status      text default 'disponivel'
+              check (status in ('disponivel','alugado','manutencao')),
+  observacoes text,
+  created_at  timestamptz default now()
+);
+
+-- ── LOCAÇÕES ──
+create table locacoes (
+  id           uuid primary key default uuid_generate_v4(),
+  veiculo_id   uuid references veiculos(id),
+  cliente_id   uuid references clientes(id),
+  data_inicio  date not null,
+  data_fim     date not null,
+  km_inicial   int,
+  km_final     int,
+  diaria       numeric(10,2),
+  total        numeric(10,2),
+  status       text default 'ativa'
+               check (status in ('ativa','encerrada','cancelada')),
+  observacoes  text,
+  criado_por   uuid references auth.users(id),
+  created_at   timestamptz default now()
+);
+
+-- ── MANUTENÇÕES ──
+create table manutencoes (
+  id          uuid primary key default uuid_generate_v4(),
+  veiculo_id  uuid references veiculos(id),
+  tipo        text not null,
+  descricao   text,
+  custo       numeric(10,2),
+  data_inicio date not null,
+  data_fim    date,
+  oficina     text,
+  status      text default 'pendente'
+              check (status in ('pendente','em_andamento','concluida')),
+  created_at  timestamptz default now()
+);
+
+-- ── RLS ──
+alter table perfis      enable row level security;
+alter table clientes    enable row level security;
+alter table veiculos    enable row level security;
+alter table locacoes    enable row level security;
 alter table manutencoes enable row level security;
-drop policy if exists "perfis_own" on perfis;
-drop policy if exists "veiculos_read" on veiculos;
-drop policy if exists "veiculos_write" on veiculos;
-drop policy if exists "clientes_all" on clientes;
-drop policy if exists "locacoes_read" on locacoes;
-drop policy if exists "locacoes_write" on locacoes;
-drop policy if exists "manut_read" on manutencoes;
-drop policy if exists "manut_write" on manutencoes;
-create policy "perfis_own" on perfis using (auth.uid() = id);
-create policy "veiculos_read" on veiculos for select using (auth.role()='authenticated');
-create policy "veiculos_write" on veiculos for all using (exists(select 1 from perfis where id=auth.uid() and perfil in ('admin','atendente')));
-create policy "clientes_all" on clientes for all using (exists(select 1 from perfis where id=auth.uid() and perfil in ('admin','atendente')));
-create policy "locacoes_read" on locacoes for select using (auth.role()='authenticated');
-create policy "locacoes_write" on locacoes for all using (exists(select 1 from perfis where id=auth.uid() and perfil in ('admin','atendente')));
-create policy "manut_read" on manutencoes for select using (auth.role()='authenticated');
-create policy "manut_write" on manutencoes for all using (exists(select 1 from perfis where id=auth.uid() and perfil in ('admin','atendente')));
-drop trigger if exists on_auth_user_created on auth.users;
-drop function if exists handle_new_user();
-create or replace function handle_new_user() returns trigger as $$
+
+-- Perfis: cada user vê o próprio; admin vê todos
+create policy "Ver proprio perfil" on perfis for select using (auth.uid() = id);
+create policy "Admin ve todos perfis" on perfis for all using (
+  exists (select 1 from perfis where id = auth.uid() and perfil = 'admin')
+);
+
+-- Veículos: todos autenticados leem; só admin/atendente escrevem
+create policy "Autenticados leem veiculos" on veiculos for select using (auth.role() = 'authenticated');
+create policy "Admin atendente escrevem veiculos" on veiculos for all using (
+  exists (select 1 from perfis where id = auth.uid() and perfil in ('admin','atendente'))
+);
+
+-- Clientes: admin e atendente acessam
+create policy "Admin atendente clientes" on clientes for all using (
+  exists (select 1 from perfis where id = auth.uid() and perfil in ('admin','atendente'))
+);
+
+-- Locações: todos leem; admin/atendente escrevem
+create policy "Autenticados leem locacoes" on locacoes for select using (auth.role() = 'authenticated');
+create policy "Admin atendente escrevem locacoes" on locacoes for all using (
+  exists (select 1 from perfis where id = auth.uid() and perfil in ('admin','atendente'))
+);
+
+-- Manutenções: todos leem; admin escreve
+create policy "Autenticados leem manutencoes" on manutencoes for select using (auth.role() = 'authenticated');
+create policy "Admin escreve manutencoes" on manutencoes for all using (
+  exists (select 1 from perfis where id = auth.uid() and perfil = 'admin')
+);
+
+-- ── TRIGGER: criar perfil ao registrar usuário ──
+create or replace function handle_new_user()
+returns trigger as $$
 begin
-  insert into public.perfis(id,nome,email,perfil) values(
+  insert into perfis (id, nome, email, perfil)
+  values (
     new.id,
     coalesce(new.raw_user_meta_data->>'nome', split_part(new.email,'@',1)),
     new.email,
-    coalesce(new.raw_user_meta_data->>'perfil','atendente')
-  ) on conflict(id) do nothing;
+    coalesce(new.raw_user_meta_data->>'perfil', 'atendente')
+  );
   return new;
 end;
-$$ language plpgsql security definer set search_path=public;
-create trigger on_auth_user_created after insert on auth.users for each row execute function handle_new_user();</pre>
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function handle_new_user();
+
+-- ── DADOS DE EXEMPLO ──
+insert into veiculos (tipo,marca,modelo,placa,ano,cor,cambio,km_atual,diaria,status) values
+  ('carro','Honda','Civic','ABC-1234',2022,'Prata','Automatico',32100,180,'disponivel'),
+  ('carro','Chevrolet','Onix','DEF-5678',2021,'Branco','Manual',48900,120,'disponivel'),
+  ('carro','Hyundai','HB20','PQR-2244',2023,'Vermelho','Automatico',12400,160,'disponivel'),
+  ('moto','Honda','CB 300','XYZ-9988',2023,'Preta','Manual',8400,90,'disponivel'),
+  ('moto','Yamaha','Fazer 250','GHI-3322',2022,'Azul','Manual',15700,80,'disponivel'),
+  ('moto','Honda','Biz 125','JKL-5544',2021,'Vermelha','Manual',22000,60,'disponivel');
+
+-- ── MENSAGENS WHATSAPP ──
+create table wpp_mensagens (
+  id          uuid primary key default uuid_generate_v4(),
+  cliente_id  uuid references clientes(id),
+  numero      text not null,
+  texto       text,
+  tipo        text default 'text' check (tipo in ('text','image','audio','document')),
+  direcao     text default 'saida' check (direcao in ('saida','entrada')),
+  media_url   text,
+  created_at  timestamptz default now()
+);
+alter table wpp_mensagens enable row level security;
+create policy "Auth acessa wpp_msgs" on wpp_mensagens for all using (auth.role() = 'authenticated');
+
+insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
+  ('Ana Lima','123.456.789-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="25444b44654048444c490b464a48">[email&#160;protected]</a>','(21) 99999-1111','AB123456','2028-06-15'),
+  ('Carlos M.','987.654.321-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="016260736d6e7241646c60686d2f626e6c">[email&#160;protected]</a>','(21) 98888-2222','CD789012','2025-04-30'),
+  ('Fernanda T.','456.789.123-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbdddec9d5dad5dfdafbded6dad2d795d8d4d6">[email&#160;protected]</a>','(21) 97777-3333','EF345678','2027-11-20');</pre>
     </div>
+
     <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;">
       <div>
         <label style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">📌 Project URL</label>
-        <input class="setup-input" id="sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off" spellcheck="false" style="margin-bottom:0">
+        <input class="setup-input" id="sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off" spellcheck="false" style="margin-bottom:0" oninput="this.style.borderColor=this.value.includes('supabase.co')?'var(--green)':'var(--border2)'">
+        <div style="font-size:11px;color:var(--muted2);margin-top:4px">Project Settings → API → <strong style="color:var(--text)">Project URL</strong></div>
       </div>
       <div>
-        <label style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">🔑 Chave anon public (começa com eyJ)</label>
-        <input class="setup-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" spellcheck="false" style="margin-bottom:0">
+        <label style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">🔑 Chave Anon (pública)</label>
+        <input class="setup-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" spellcheck="false" style="margin-bottom:0" oninput="this.style.borderColor=this.value.startsWith('eyJ')?'var(--green)':'var(--border2)'">
+        <div style="font-size:11px;color:var(--muted2);margin-top:4px">Project Settings → API → <strong style="color:var(--text)">anon public</strong> (começa com <code style="color:var(--accent);background:var(--bg);padding:1px 5px;border-radius:4px">eyJ</code>)</div>
       </div>
-      <div id="setup-msg" style="display:none;border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.5"></div>
+      <div id="setup-err" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--red);line-height:1.5"></div>
+      <div id="setup-ok"  style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green)"></div>
       <button class="setup-btn" id="setup-btn" onclick="setupConectar()">⚡ Conectar ao Supabase</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">✅ <strong style="color:var(--text)">URL correta:</strong><br><code style="color:var(--green);font-size:10px">https://abc123.supabase.co</code></div>
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">✅ <strong style="color:var(--text)">Chave correta:</strong><br><code style="color:var(--green);font-size:10px">eyJhbGci... (longa, começa com eyJ)</code></div>
+      </div>
     </div>
     <div style="text-align:center;margin-top:14px">
       <a href="https://supabase.com" target="_blank" style="font-size:12px;color:var(--blue)">Criar conta grátis no Supabase →</a>
@@ -341,8 +481,11 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
     </div>
   </div>
 </div>
+</div>
 
-<!-- LOGIN -->
+<!-- ════════════════════════════════════════
+  LAYER 2 — LOGIN / CADASTRO
+════════════════════════════════════════ -->
 <div id="layer-login" class="layer">
   <div class="login-wrap">
     <div class="login-left">
@@ -369,6 +512,8 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
         <div class="login-tab active" id="tab-login" onclick="switchTab('login')">Entrar</div>
         <div class="login-tab" id="tab-register" onclick="switchTab('register')">Criar conta</div>
       </div>
+
+      <!-- LOGIN FORM -->
       <div id="form-login" class="login-form">
         <input class="login-input" id="l-email" type="email" placeholder="seu@email.com">
         <input class="login-input" id="l-senha" type="password" placeholder="Senha">
@@ -376,6 +521,8 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
         <button class="login-btn" onclick="fazerLogin()">Entrar →</button>
         <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:8px;cursor:pointer" onclick="esqueceuSenha()">Esqueci minha senha</div>
       </div>
+
+      <!-- REGISTER FORM -->
       <div id="form-register" class="login-form" style="display:none">
         <input class="login-input" id="r-nome" placeholder="Nome completo">
         <input class="login-input" id="r-email" type="email" placeholder="seu@email.com">
@@ -385,29 +532,42 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
           <option value="admin">👑 Administrador</option>
           <option value="investidor">📈 Investidor</option>
         </select>
-        <div style="font-size:11px;color:var(--muted2);background:var(--bg3);padding:10px;border-radius:8px;border:1px solid var(--border)">⚠️ Apenas admins devem criar contas de Admin.</div>
+        <div style="font-size:11px;color:var(--muted2);background:var(--bg3);padding:10px;border-radius:8px;border:1px solid var(--border)">
+          ⚠️ Apenas admins devem criar contas de Admin. Atendentes e Investidores não têm acesso a configurações do sistema.
+        </div>
         <div class="login-err" id="register-err"></div>
-        <div class="login-ok" id="register-ok"></div>
+        <div class="login-ok"  id="register-ok"></div>
         <button class="login-btn" onclick="fazerCadastro()">Criar conta →</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ════════════════════════════════════════
+  LAYER 3 — APP
+════════════════════════════════════════ -->
 <div id="layer-app" class="layer">
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="logo"><div class="logo-mark">⬡ FleetPro</div><div class="logo-sub">Sistema de Locadora</div></div>
-    <nav id="sidebar-nav"></nav>
+    <nav id="sidebar-nav">
+      <!-- renderizado dinamicamente por perfil -->
+    </nav>
     <div class="sidebar-footer">
       <div class="user-pill">
         <div class="avatar" id="sb-avatar">?</div>
-        <div class="user-info"><div class="uname" id="sb-nome">—</div><div class="urole" id="sb-role">—</div></div>
+        <div class="user-info">
+          <div class="uname" id="sb-nome">—</div>
+          <div class="urole" id="sb-role">—</div>
+        </div>
       </div>
       <div class="db-badge"><div class="db-dot"></div>Supabase conectado</div>
       <button class="btn btn-ghost" style="width:100%;margin-top:10px;font-size:11px" onclick="fazerLogout()">↩ Sair</button>
     </div>
   </aside>
+
+  <!-- MAIN -->
   <main class="main">
     <header class="topbar">
       <div class="page-title" id="page-title">Dashboard</div>
@@ -429,30 +589,34 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
         </div>
         <div class="grid2">
           <div class="card"><div class="card-header"><span class="card-title">Locações em andamento</span></div>
-            <table><thead><tr><th>Veículo</th><th>Cliente</th><th>Devolução</th><th>Status</th></tr></thead><tbody id="dash-loc"></tbody></table></div>
+            <table><thead><tr><th>Veículo</th><th>Cliente</th><th>Devolução</th><th>Status</th></tr></thead>
+            <tbody id="dash-loc"></tbody></table></div>
           <div class="card"><div class="card-header"><span class="card-title">Manutenções</span></div>
-            <table><thead><tr><th>Veículo</th><th>Serviço</th><th>Status</th></tr></thead><tbody id="dash-man"></tbody></table></div>
+            <table><thead><tr><th>Veículo</th><th>Serviço</th><th>Status</th></tr></thead>
+            <tbody id="dash-man"></tbody></table></div>
         </div>
       </div>
 
       <!-- CARROS -->
       <div class="page" id="page-carros">
         <div class="input-group">
-          <input class="input-flex" type="text" id="s-carros" placeholder="🔍 Buscar modelo, placa..." oninput="renderVeiculos()">
+          <input class="input-flex" type="text" id="s-carros" placeholder="🔍  Buscar modelo, placa..." oninput="renderVeiculos()">
           <select id="f-carros" onchange="renderVeiculos()"><option value="">Todos</option><option value="disponivel">Disponível</option><option value="alugado">Alugado</option><option value="manutencao">Manutenção</option></select>
-          <button class="btn btn-primary" onclick="openModal('veiculo','carro')">+ Cadastrar</button>
+          <button class="btn btn-primary" id="btn-add-carro" onclick="openModal('veiculo','carro')">+ Cadastrar</button>
         </div>
-        <div class="card"><table><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Km</th><th>Diária</th><th>Status</th><th></th></tr></thead><tbody id="tb-carros"></tbody></table></div>
+        <div class="card"><table><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Km</th><th>Diária</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-carros"></tbody></table></div>
       </div>
 
       <!-- MOTOS -->
       <div class="page" id="page-motos">
         <div class="input-group">
-          <input class="input-flex" type="text" id="s-motos" placeholder="🔍 Buscar modelo, placa..." oninput="renderVeiculos()">
+          <input class="input-flex" type="text" id="s-motos" placeholder="🔍  Buscar modelo, placa..." oninput="renderVeiculos()">
           <select id="f-motos" onchange="renderVeiculos()"><option value="">Todos</option><option value="disponivel">Disponível</option><option value="alugado">Alugado</option><option value="manutencao">Manutenção</option></select>
-          <button class="btn btn-primary" onclick="openModal('veiculo','moto')">+ Cadastrar</button>
+          <button class="btn btn-primary" id="btn-add-moto" onclick="openModal('veiculo','moto')">+ Cadastrar</button>
         </div>
-        <div class="card"><table><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Km</th><th>Diária</th><th>Status</th><th></th></tr></thead><tbody id="tb-motos"></tbody></table></div>
+        <div class="card"><table><thead><tr><th>Veículo</th><th>Placa</th><th>Ano</th><th>Km</th><th>Diária</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tb-motos"></tbody></table></div>
       </div>
 
       <!-- HISTÓRICO -->
@@ -460,14 +624,12 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
         <div class="grid2">
           <div class="card">
             <div class="card-header"><span class="card-title">Selecionar veículo</span></div>
-            <div class="input-group" style="margin-bottom:12px"><input class="input-flex" type="text" id="s-hist" placeholder="🔍 Placa ou modelo..." oninput="filtrarHistVeiculos()"></div>
+            <div class="input-group" style="margin-bottom:12px"><input class="input-flex" type="text" id="s-hist" placeholder="🔍  Placa ou modelo..." oninput="filtrarHistVeiculos()"></div>
             <table><thead><tr><th>Veículo</th><th>Placa</th></tr></thead><tbody id="tb-hist-veic"></tbody></table>
           </div>
           <div class="card">
-            <div class="card-header">
-              <div><div class="card-title" id="hist-title">Selecione um veículo</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Histórico completo</div></div>
-              <button class="btn btn-ghost" style="font-size:11px" onclick="openModal('manutencao')">+ Manutenção</button>
-            </div>
+            <div class="card-header"><div><div class="card-title" id="hist-title">Selecione um veículo</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Histórico completo</div></div>
+            <button class="btn btn-ghost" style="font-size:11px" id="btn-add-maint" onclick="openModal('manutencao')">+ Manutenção</button></div>
             <div class="timeline" id="hist-tl"><p style="color:var(--muted2);font-size:13px">← Selecione um veículo</p></div>
           </div>
         </div>
@@ -476,10 +638,11 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
       <!-- CLIENTES -->
       <div class="page" id="page-clientes">
         <div class="input-group">
-          <input class="input-flex" type="text" id="s-clientes" placeholder="🔍 Nome, CPF ou telefone..." oninput="renderClientes()">
-          <button class="btn btn-primary" onclick="openModal('cliente')">+ Novo cliente</button>
+          <input class="input-flex" type="text" id="s-clientes" placeholder="🔍  Nome, CPF ou telefone..." oninput="renderClientes()">
+          <button class="btn btn-primary" id="btn-add-cliente" onclick="openModal('cliente')">+ Novo cliente</button>
         </div>
-        <div class="card"><table><thead><tr><th>Cliente</th><th>CPF</th><th>Telefone</th><th>CNH validade</th><th>Status CNH</th><th></th></tr></thead><tbody id="tb-clientes"></tbody></table></div>
+        <div class="card"><table><thead><tr><th>Cliente</th><th>CPF</th><th>Telefone</th><th>CNH validade</th><th>Status CNH</th><th></th></tr></thead>
+        <tbody id="tb-clientes"></tbody></table></div>
       </div>
 
       <!-- CONTRATOS -->
@@ -549,66 +712,157 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
         </div>
       </div>
 
-      <!-- CHAT -->
+      <!-- CHAT WHATSAPP COMPLETO -->
       <div class="page" id="page-chat">
         <div class="chat-layout">
+
+          <!-- COLUNA ESQUERDA: lista de contatos -->
           <div class="chat-list">
-            <div class="chat-list-hdr">💬 WhatsApp<div id="wpp-status-hdr" style="font-size:11px;font-weight:400;color:var(--muted);margin-top:2px">● Verificando...</div></div>
-            <div style="padding:10px"><input type="text" id="chat-search" placeholder="🔍 Buscar..." oninput="renderChatContacts()" style="width:100%;font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:7px 10px;border-radius:7px;outline:none;font-family:var(--font-body)"></div>
+            <div class="chat-list-hdr">
+              💬 WhatsApp
+              <div id="wpp-status-badge" style="font-size:11px;font-weight:400;color:var(--muted);margin-top:2px">⚪ Desconectado</div>
+            </div>
+            <div style="padding:8px 10px">
+              <input type="text" id="chat-search" placeholder="🔍  Buscar contato..." style="width:100%;font-size:12px" oninput="filtrarContatos()">
+            </div>
             <div id="chat-contacts"></div>
           </div>
+
+          <!-- COLUNA CENTRAL: janela de conversa -->
           <div class="chat-window">
+            <!-- Topo da conversa -->
             <div class="chat-top">
-              <div class="cavatar" id="chat-av" style="background:rgba(34,197,94,.12);color:var(--green)">?</div>
-              <div style="flex:1"><div style="font-size:13px;font-weight:600" id="chat-name">Selecione um contato</div><div style="font-size:11px;color:var(--muted)" id="chat-info">—</div></div>
-              <button class="btn btn-ghost" style="font-size:11px" onclick="recarregarMsgs()">↻</button>
+              <div class="cavatar" id="chat-av">?</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600" id="chat-name">Selecione um contato</div>
+                <div style="font-size:11px;color:var(--muted)" id="chat-info">—</div>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="goPage('clientes')">👤 Perfil</button>
+                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="enviarContrato()">📄 Contrato</button>
+                <button class="btn btn-primary" style="font-size:11px;padding:5px 10px" onclick="goPage('contratos')">+ Locação</button>
+              </div>
             </div>
-            <div class="chat-msgs scrollbar-thin" id="chat-msgs"><div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Selecione uma conversa</div></div>
+
+            <!-- Área de mensagens -->
+            <div class="chat-msgs scrollbar-thin" id="chat-msgs">
+              <div style="text-align:center;font-size:12px;color:var(--muted2);margin:30px 0">Selecione um contato para ver a conversa</div>
+            </div>
+
+            <!-- Preview de arquivo -->
+            <div id="file-preview" style="display:none;padding:8px 18px;background:var(--bg3);border-top:1px solid var(--border);display:none;align-items:center;gap:10px">
+              <span id="file-preview-name" style="font-size:12px;color:var(--muted);flex:1"></span>
+              <button onclick="cancelarArquivo()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px">×</button>
+            </div>
+
+            <!-- Input de mensagem -->
             <div class="chat-input-area">
-              <input class="chat-input" id="chat-msg-input" placeholder="Digite uma mensagem..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}">
-              <button class="btn btn-primary" onclick="sendMsg()">Enviar</button>
+              <!-- Upload imagem -->
+              <label title="Enviar imagem" style="cursor:pointer;display:flex;align-items:center;padding:0 4px">
+                <input type="file" id="file-img" accept="image/*" style="display:none" onchange="selecionarArquivo(this,'image')">
+                <span style="font-size:20px;color:var(--muted)">🖼</span>
+              </label>
+              <!-- Upload áudio -->
+              <label title="Enviar áudio" style="cursor:pointer;display:flex;align-items:center;padding:0 4px">
+                <input type="file" id="file-audio" accept="audio/*,.ogg,.mp3,.m4a,.aac" style="display:none" onchange="selecionarArquivo(this,'audio')">
+                <span style="font-size:20px;color:var(--muted)">🎵</span>
+              </label>
+              <!-- Gravar áudio -->
+              <button id="btn-record" title="Gravar áudio" onclick="toggleRecord()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);padding:0 4px">🎙</button>
+              <!-- Campo de texto -->
+              <input class="chat-input" id="chat-msg-input" placeholder="Digite uma mensagem..."
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}">
+              <!-- Enviar -->
+              <button class="btn btn-primary" onclick="sendMsg()" style="padding:9px 16px">Enviar</button>
             </div>
           </div>
+
+          <!-- COLUNA DIREITA: configuração e respostas rápidas -->
           <div class="chat-side scrollbar-thin">
-            <div id="wpp-status-badge" class="wpp-ok"><div class="wdot"></div>Verificando...</div>
-            <div style="margin-bottom:16px">
+
+            <!-- Status de conexão -->
+            <div id="wpp-conn-panel">
+              <div class="wpp-ok" id="wpp-ok-badge"><div class="wdot"></div>Conectado</div>
+              <!-- Config WPP -->
+              <div style="margin-bottom:14px">
+                <div class="cst">Configuração Evolution API v2</div>
+                <div class="form-group" style="margin-bottom:7px">
+                  <label>URL Evolution API (sua VPS)</label>
+                  <input type="text" id="wpp-url" placeholder="https://evo.seudominio.com" style="width:100%;font-size:12px">
+                </div>
+                <div class="form-group" style="margin-bottom:7px">
+                  <label>API Key da Evolution</label>
+                  <input type="text" id="wpp-apikey" placeholder="sua-api-key-evo" style="width:100%;font-size:12px">
+                </div>
+                <div class="form-group" style="margin-bottom:7px">
+                  <label>Nome da instância</label>
+                  <input type="text" id="wpp-inst" placeholder="fleetpro" style="width:100%;font-size:12px" value="fleetpro">
+                </div>
+                <div style="height:1px;background:var(--border);margin:8px 0"></div>
+                <div class="form-group" style="margin-bottom:7px">
+                  <label>URL do Bridge Server <span style="color:var(--accent)">★</span></label>
+                  <input type="text" id="wpp-bridge" placeholder="https://seudominio.com:3001" style="width:100%;font-size:12px">
+                  <div style="font-size:10px;color:var(--muted2);margin-top:3px">Node.js rodando na sua VPS (porta 3001)</div>
+                </div>
+                <div class="form-group" style="margin-bottom:7px">
+                  <label>Secret do Bridge</label>
+                  <input type="text" id="wpp-secret" placeholder="fleetpro-secret-2025" value="fleetpro-secret-2025" style="width:100%;font-size:12px">
+                </div>
+                <button class="btn btn-primary" style="width:100%;font-size:12px;margin-bottom:6px" onclick="conectarWpp()">⚡ Conectar tudo</button>
+                <div style="font-size:11px;color:var(--muted2);line-height:1.5;background:var(--bg3);padding:8px;border-radius:6px">
+                  Configure o n8n para fazer POST em:<br>
+                  <code id="webhook-url-display" style="color:var(--accent);font-size:10px;word-break:break-all">configure e conecte para ver a URL</code>
+                </div>
+              </div>
+            </div>
+
+            <!-- Respostas rápidas -->
+            <div style="margin-bottom:14px">
               <div class="cst">Respostas rápidas</div>
               <div class="qr" onclick="setMsg(this.textContent)">Olá! Como posso ajudar? 😊</div>
               <div class="qr" onclick="setMsg(this.textContent)">Carros a partir de R$ 120/dia. Motos a partir de R$ 60/dia.</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Preciso de CNH, CPF e comprovante de residência.</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Posso gerar o contrato agora! Quando retira o veículo?</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Devolução das 8h às 19h.</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Preciso de CNH, CPF e comprovante de residência para alugar.</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Posso gerar o contrato agora! Quando você retira o veículo?</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Devolução das 8h às 19h na nossa unidade.</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Veículo entregue, obrigado pela preferência! 🚗✅</div>
             </div>
+
+            <!-- Assinatura -->
             <div>
-              <div class="cst">Configurar Evolution API</div>
-              <div class="form-group" style="margin-bottom:8px"><label>URL da API</label><input type="text" id="wpp-url" placeholder="https://evo.seuservidor.com.br" style="width:100%;font-size:12px"></div>
-              <div class="form-group" style="margin-bottom:8px"><label>API Key</label><input type="text" id="wpp-key" placeholder="XXXXX-XXXXX-XXXXX" style="width:100%;font-size:12px"></div>
-              <div class="form-group" style="margin-bottom:10px"><label>Instância</label><input type="text" id="wpp-inst" placeholder="minhainstancia" style="width:100%;font-size:12px"></div>
-              <button class="btn btn-primary" style="width:100%;font-size:12px;margin-bottom:6px" onclick="salvarWpp()">⚡ Conectar WhatsApp</button>
-              <button class="btn btn-ghost" style="width:100%;font-size:12px" onclick="limparWpp()">Limpar configuração</button>
+              <div class="cst">Assinatura automática</div>
+              <textarea id="wpp-assinatura" rows="2" style="width:100%;font-size:12px;resize:none;margin-bottom:6px">— Equipe FleetPro 🚗🏍️</textarea>
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
+                <input type="checkbox" id="wpp-usar-assinatura" checked> Adicionar assinatura
+              </label>
             </div>
           </div>
+
         </div>
       </div>
 
-      <!-- USUÁRIOS -->
+      <!-- USUÁRIOS (só admin) -->
       <div class="page" id="page-usuarios">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-          <div><div style="font-family:var(--font-display);font-size:16px;font-weight:700">Gerenciar usuários</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Controle de acesso e perfis</div></div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:16px;font-weight:700">Gerenciar usuários</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Controle de acesso e perfis</div>
+          </div>
           <button class="btn btn-primary" onclick="switchTab('register');goLayer('login')">+ Criar usuário</button>
         </div>
         <div id="usuarios-list"></div>
       </div>
 
       <!-- INVESTIDORES -->
-      <div class="page" id="page-investidores"></div>
+      <div class="page" id="page-investidores">
+        <!-- conteúdo muda por perfil — renderizado em JS -->
+      </div>
 
-      <!-- ACESSO NEGADO -->
+      <!-- ACCESS DENIED -->
       <div class="page" id="page-denied">
         <div class="access-denied">
           <div class="ad-icon">🚫</div>
           <div class="ad-title">Acesso negado</div>
-          <div class="ad-sub">Seu perfil não tem permissão para esta seção.</div>
+          <div class="ad-sub">Seu perfil não tem permissão para acessar esta seção. Fale com o administrador.</div>
           <button class="btn btn-ghost" onclick="goPage('dashboard')">← Voltar ao dashboard</button>
         </div>
       </div>
@@ -617,20 +871,20 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
   </main>
 </div>
 
-<!-- MODAIS -->
+<!-- ══ MODAIS ══ -->
 <div class="modal-overlay" id="m-veiculo">
   <div class="modal">
     <div class="modal-header"><div class="modal-title" id="mv-title">Cadastrar Veículo</div><button class="modal-close" onclick="closeModal('veiculo')">✕</button></div>
     <div class="form-grid">
       <div class="form-group"><label>Tipo</label><select id="mv-tipo" style="width:100%"><option value="carro">🚗 Carro</option><option value="moto">🏍️ Moto</option></select></div>
-      <div class="form-group"><label>Marca *</label><input type="text" id="mv-marca" placeholder="Honda" style="width:100%"></div>
-      <div class="form-group"><label>Modelo *</label><input type="text" id="mv-modelo" placeholder="Civic" style="width:100%"></div>
-      <div class="form-group"><label>Placa *</label><input type="text" id="mv-placa" placeholder="ABC-1234" style="width:100%"></div>
+      <div class="form-group"><label>Marca</label><input type="text" id="mv-marca" placeholder="Honda" style="width:100%"></div>
+      <div class="form-group"><label>Modelo</label><input type="text" id="mv-modelo" placeholder="Civic" style="width:100%"></div>
+      <div class="form-group"><label>Placa</label><input type="text" id="mv-placa" placeholder="ABC-1234" style="width:100%"></div>
       <div class="form-group"><label>Ano</label><input type="number" id="mv-ano" placeholder="2023" style="width:100%"></div>
       <div class="form-group"><label>Cor</label><input type="text" id="mv-cor" placeholder="Prata" style="width:100%"></div>
       <div class="form-group"><label>Câmbio</label><select id="mv-cambio" style="width:100%"><option value="Automatico">Automático</option><option value="Manual">Manual</option></select></div>
       <div class="form-group"><label>Km atual</label><input type="number" id="mv-km" placeholder="0" style="width:100%"></div>
-      <div class="form-group full"><label>Diária (R$) *</label><input type="number" id="mv-diaria" placeholder="150" style="width:100%"></div>
+      <div class="form-group full"><label>Diária (R$)</label><input type="number" id="mv-diaria" placeholder="150" style="width:100%"></div>
       <div class="form-group full"><label>Observações</label><textarea id="mv-obs" rows="2" style="width:100%;resize:none"></textarea></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('veiculo')">Cancelar</button><button class="btn btn-primary" onclick="salvarVeiculo()">✓ Salvar</button></div>
@@ -641,8 +895,8 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
   <div class="modal">
     <div class="modal-header"><div class="modal-title">Cadastrar Cliente</div><button class="modal-close" onclick="closeModal('cliente')">✕</button></div>
     <div class="form-grid">
-      <div class="form-group full"><label>Nome completo *</label><input type="text" id="mc-nome" placeholder="Ana Lima" style="width:100%"></div>
-      <div class="form-group"><label>CPF *</label><input type="text" id="mc-cpf" placeholder="123.456.789-00" style="width:100%"></div>
+      <div class="form-group full"><label>Nome completo</label><input type="text" id="mc-nome" placeholder="Ana Lima" style="width:100%"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="mc-cpf" placeholder="123.456.789-00" style="width:100%"></div>
       <div class="form-group"><label>Telefone</label><input type="text" id="mc-tel" placeholder="(21) 99999-0000" style="width:100%"></div>
       <div class="form-group full"><label>Email</label><input type="email" id="mc-email" placeholder="email@exemplo.com" style="width:100%"></div>
       <div class="form-group"><label>Nº CNH</label><input type="text" id="mc-cnh" placeholder="AB123456" style="width:100%"></div>
@@ -658,12 +912,12 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
   <div class="modal">
     <div class="modal-header"><div class="modal-title">Registrar Manutenção</div><button class="modal-close" onclick="closeModal('manutencao')">✕</button></div>
     <div class="form-grid">
-      <div class="form-group full"><label>Veículo *</label><select id="mm-vei" style="width:100%"></select></div>
-      <div class="form-group full"><label>Tipo de serviço *</label><input type="text" id="mm-tipo" placeholder="Troca de óleo, revisão..." style="width:100%"></div>
+      <div class="form-group full"><label>Veículo</label><select id="mm-vei" style="width:100%"></select></div>
+      <div class="form-group full"><label>Tipo de serviço</label><input type="text" id="mm-tipo" placeholder="Troca de óleo, revisão..." style="width:100%"></div>
       <div class="form-group full"><label>Descrição</label><textarea id="mm-desc" rows="2" style="width:100%;resize:none"></textarea></div>
       <div class="form-group"><label>Oficina</label><input type="text" id="mm-ofic" placeholder="AutoCenter" style="width:100%"></div>
       <div class="form-group"><label>Custo (R$)</label><input type="number" id="mm-custo" placeholder="0" style="width:100%"></div>
-      <div class="form-group"><label>Data início *</label><input type="date" id="mm-ini" style="width:100%"></div>
+      <div class="form-group"><label>Data início</label><input type="date" id="mm-ini" style="width:100%"></div>
       <div class="form-group"><label>Previsão fim</label><input type="date" id="mm-fim" style="width:100%"></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('manutencao')">Cancelar</button><button class="btn btn-primary" onclick="salvarManutencao()">✓ Registrar</button></div>
@@ -672,52 +926,55 @@ create trigger on_auth_user_created after insert on auth.users for each row exec
 
 <div class="notify" id="notify"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const {createClient} = supabase;
 let sb = null;
 let currentUser = null, currentPerfil = null;
 let allVeiculos=[], allClientes=[], allLocacoes=[], allManutencoes=[], allPerfis=[];
 let histVeiculoId = null, chatMsgs = {}, activeChatId = null;
-const now = new Date();
-let calYear = now.getFullYear(), calMonth = now.getMonth();
+let calYear=2025, calMonth=2;
 const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
-// WhatsApp config
-let wppCfg = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
-let wppOk = false;
-
+// ══ ROLES CONFIG ══
 const ROLE_MENUS = {
-  admin:[
-    {section:'Principal'},{id:'dashboard',icon:'⊞',label:'Dashboard'},
-    {section:'Frota'},{id:'carros',icon:'🚗',label:'Carros'},{id:'motos',icon:'🏍️',label:'Motos'},{id:'historico',icon:'📋',label:'Histórico'},
-    {section:'Clientes'},{id:'clientes',icon:'👤',label:'Clientes'},{id:'contratos',icon:'📄',label:'Contratos'},
-    {section:'Operações'},{id:'calendario',icon:'📅',label:'Calendário'},{id:'chat',icon:'💬',label:'Chat WhatsApp'},
-    {section:'Admin'},{id:'usuarios',icon:'🔑',label:'Usuários'},{id:'investidores',icon:'📊',label:'Investidores'},
+  admin: [
+    {section:'Principal'},
+    {id:'dashboard', icon:'⊞', label:'Dashboard'},
+    {section:'Frota'},
+    {id:'carros',    icon:'🚗', label:'Carros'},
+    {id:'motos',     icon:'🏍️', label:'Motos'},
+    {id:'historico', icon:'📋', label:'Histórico'},
+    {section:'Clientes'},
+    {id:'clientes',  icon:'👤', label:'Clientes'},
+    {id:'contratos', icon:'📄', label:'Contratos'},
+    {section:'Operações'},
+    {id:'calendario',icon:'📅', label:'Calendário'},
+    {id:'chat',      icon:'💬', label:'Chat WhatsApp'},
+    {section:'Admin'},
+    {id:'usuarios',  icon:'🔑', label:'Usuários'},
+    {id:'investidores',icon:'📊',label:'Investidores'},
   ],
-  atendente:[
-    {section:'Principal'},{id:'dashboard',icon:'⊞',label:'Dashboard'},
-    {section:'Frota'},{id:'carros',icon:'🚗',label:'Carros'},{id:'motos',icon:'🏍️',label:'Motos'},
-    {section:'Clientes'},{id:'clientes',icon:'👤',label:'Clientes'},{id:'contratos',icon:'📄',label:'Contratos'},
-    {section:'Operações'},{id:'calendario',icon:'📅',label:'Calendário'},{id:'chat',icon:'💬',label:'Chat WhatsApp'},
+  atendente: [
+    {section:'Principal'},
+    {id:'dashboard', icon:'⊞', label:'Dashboard'},
+    {section:'Frota'},
+    {id:'carros',    icon:'🚗', label:'Carros'},
+    {id:'motos',     icon:'🏍️', label:'Motos'},
+    {section:'Clientes'},
+    {id:'clientes',  icon:'👤', label:'Clientes'},
+    {id:'contratos', icon:'📄', label:'Contratos'},
+    {section:'Operações'},
+    {id:'calendario',icon:'📅', label:'Calendário'},
+    {id:'chat',      icon:'💬', label:'Chat WhatsApp'},
   ],
-  investidor:[
-    {section:'Acesso'},{id:'investidores',icon:'📊',label:'Métricas & Relatórios'},{id:'dashboard',icon:'⊞',label:'Dashboard geral'},
+  investidor: [
+    {section:'Acesso'},
+    {id:'investidores',icon:'📊',label:'Métricas & Relatórios'},
+    {id:'dashboard', icon:'⊞', label:'Dashboard geral'},
   ],
 };
+
 const ROLE_LABELS = {admin:'Administrador', atendente:'Atendente', investidor:'Investidor'};
-const PAGE_CFG = {
-  dashboard:   {title:'Dashboard',             action:'',                roles:['admin','atendente','investidor']},
-  carros:      {title:'Estoque — Carros',       action:'+ Cadastrar',     modal:'veiculo', roles:['admin','atendente']},
-  motos:       {title:'Estoque — Motos',        action:'+ Cadastrar',     modal:'veiculo', roles:['admin','atendente']},
-  historico:   {title:'Histórico & Manutenção', action:'',                roles:['admin','atendente']},
-  clientes:    {title:'Clientes',               action:'+ Novo cliente',  modal:'cliente', roles:['admin','atendente']},
-  contratos:   {title:'Contratos',              action:'',                roles:['admin','atendente']},
-  calendario:  {title:'Calendário',             action:'',                roles:['admin','atendente']},
-  chat:        {title:'Chat WhatsApp',          action:'',                roles:['admin','atendente']},
-  usuarios:    {title:'Usuários & Acessos',     action:'',                roles:['admin']},
-  investidores:{title:'Métricas & Investidores',action:'',                roles:['admin','investidor']},
-  denied:      {title:'Acesso negado',          action:'',                roles:['admin','atendente','investidor']},
-};
 
 // ══ LAYERS ══
 function goLayer(id){
@@ -726,51 +983,57 @@ function goLayer(id){
 }
 
 // ══ SETUP ══
-function toggleSQL(){const p=document.getElementById('sql-panel');p.style.display=p.style.display==='block'?'none':'block';}
-function copySQL(){navigator.clipboard.writeText(document.getElementById('sql-text').textContent);notify('SQL copiado!','success');}
+function toggleSQL(){
+  const p=document.getElementById('sql-panel');
+  p.style.display=p.style.display==='block'?'none':'block';
+}
+function copySQL(){ navigator.clipboard.writeText(document.getElementById('sql-text').textContent); notify('SQL copiado!','success'); }
+
 function limparSetup(){
-  localStorage.removeItem('fp_url');localStorage.removeItem('fp_key');
+  localStorage.removeItem('fp_url'); localStorage.removeItem('fp_key');
   document.getElementById('sb-url').value='';
   document.getElementById('sb-key').value='';
-  showSetupMsg('Dados limpos. Cole suas credenciais novamente.','info');
-}
-function showSetupMsg(msg, type){
-  const el=document.getElementById('setup-msg');
-  const colors={error:'rgba(239,68,68,.1)|rgba(239,68,68,.3)|var(--red)',ok:'rgba(34,197,94,.1)|rgba(34,197,94,.3)|var(--green)',info:'rgba(59,130,246,.1)|rgba(59,130,246,.3)|var(--blue)'};
-  const [bg,brd,clr]=(colors[type]||colors.error).split('|');
-  el.style.cssText=`display:block;background:${bg};border:1px solid ${brd};border-radius:8px;padding:10px 12px;font-size:12px;color:${clr};line-height:1.5`;
-  el.innerHTML=msg;
+  const e=document.getElementById('setup-err');
+  e.innerHTML='Dados limpos. Cole suas credenciais novamente.';
+  e.style.cssText='display:block;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--blue);line-height:1.5';
 }
 
 async function setupConectar(){
-  const url=document.getElementById('sb-url').value.trim().replace(/[\s\n\r]/g,'');
-  const key=document.getElementById('sb-key').value.trim().replace(/[\s\n\r]/g,'');
-  document.getElementById('sb-url').value=url;
-  document.getElementById('sb-key').value=key;
+  const url=document.getElementById('sb-url').value.trim();
+  const key=document.getElementById('sb-key').value.trim();
+  const errEl=document.getElementById('setup-err');
+  const okEl=document.getElementById('setup-ok');
   const btn=document.getElementById('setup-btn');
-  document.getElementById('setup-msg').style.display='none';
+  const showErr=(msg)=>{
+    errEl.innerHTML=msg;
+    errEl.style.cssText='display:block;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--red);line-height:1.5;margin-top:0';
+    okEl.style.display='none';
+  };
+  errEl.style.display='none'; okEl.style.display='none';
 
-  if(!url||!key){showSetupMsg('⚠️ Preencha a <strong>Project URL</strong> e a <strong>chave anon</strong>.','error');return;}
-  if(!url.includes('supabase.co')){showSetupMsg('⚠️ URL inválida. Deve ser: <code>https://xxxx.supabase.co</code>','error');return;}
-  if(!key.startsWith('eyJ')){showSetupMsg('⚠️ Chave inválida. Use a <strong>anon public</strong> (aba Legacy), que começa com <code>eyJ</code>.','error');return;}
+  if(!url && !key){ showErr('⚠️ Preencha os dois campos acima: <strong>Project URL</strong> e <strong>chave anon public</strong>.'); return; }
+  if(!url){ showErr('⚠️ A <strong>Project URL</strong> está vazia. Formato: <code style="color:var(--accent)">https://xxxx.supabase.co</code>'); return; }
+  if(!url.includes('supabase.co')){ showErr('⚠️ A URL parece incorreta. Deve terminar com <code style="color:var(--accent)">.supabase.co</code>'); return; }
+  if(!key){ showErr('⚠️ A <strong>chave anon public</strong> está vazia. Deve começar com <code style="color:var(--accent)">eyJ</code>'); return; }
+  if(!key.startsWith('eyJ')){ showErr('⚠️ Chave inválida — você colou a chave errada.<br><span style="color:var(--muted)">Use a <strong>anon public</strong>, que começa com <code style="color:var(--accent)">eyJ</code>. Não use a service_role.</span>'); return; }
 
-  btn.textContent='⏳ Conectando...';btn.disabled=true;
+  btn.textContent='⏳ Conectando...'; btn.disabled=true;
   try{
-    const client=createClient(url,key);
-    const {error}=await client.auth.getSession();
+    sb=createClient(url,key);
+    const {error}=await sb.auth.getSession();
     if(error) throw error;
-    sb=client;
     localStorage.setItem('fp_url',url);
     localStorage.setItem('fp_key',key);
-    showSetupMsg('✅ Conectado com sucesso! Redirecionando...','ok');
+    okEl.innerHTML='✅ Conectado! Redirecionando...';
+    okEl.style.cssText='display:block;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green)';
     btn.textContent='✓ Conectado!';
     setTimeout(()=>goLayer('login'),900);
   }catch(e){
-    btn.textContent='⚡ Conectar ao Supabase';btn.disabled=false;
+    btn.textContent='⚡ Conectar ao Supabase'; btn.disabled=false;
     let msg=e.message||'Erro desconhecido';
-    if(msg.includes('Invalid')||msg.includes('apikey')) msg='Chave inválida — confirme que copiou a <strong>anon public</strong> (aba Legacy).';
-    else if(msg.includes('fetch')||msg.includes('Failed')||msg.includes('network')) msg='Não foi possível alcançar o Supabase. Verifique a URL.';
-    showSetupMsg('❌ '+msg,'error');
+    if(msg.includes('Invalid API key')||msg.includes('apikey')) msg='Chave inválida. Verifique se copiou a <strong>anon public</strong> correta.';
+    else if(msg.includes('fetch')||msg.includes('network')) msg='Não foi possível alcançar o Supabase. Verifique a URL.';
+    showErr('❌ '+msg+'<br><span style="color:var(--muted);display:block;margin-top:4px">Se ainda não criou as tabelas, use o SQL acima no SQL Editor do Supabase primeiro.</span>');
   }
 }
 
@@ -800,10 +1063,12 @@ async function fazerCadastro(){
   const perfil=document.getElementById('r-perfil').value;
   const errEl=document.getElementById('register-err');
   const okEl=document.getElementById('register-ok');
-  errEl.style.display='none';okEl.style.display='none';
+  errEl.style.display='none'; okEl.style.display='none';
   if(!nome||!email||!senha){errEl.textContent='Preencha todos os campos.';errEl.style.display='block';return;}
-  if(senha.length<6){errEl.textContent='Senha deve ter no mínimo 6 caracteres.';errEl.style.display='block';return;}
-  const {error}=await sb.auth.signUp({email,password:senha,options:{data:{nome,perfil}}});
+  const {error}=await sb.auth.signUp({
+    email,password:senha,
+    options:{data:{nome,perfil}}
+  });
   if(error){errEl.textContent='❌ '+error.message;errEl.style.display='block';return;}
   okEl.textContent='✓ Conta criada! Verifique seu email e depois faça login.';
   okEl.style.display='block';
@@ -818,73 +1083,87 @@ async function esqueceuSenha(){
 
 async function fazerLogout(){
   await sb.auth.signOut();
-  currentUser=null;currentPerfil=null;
+  currentUser=null; currentPerfil=null;
   goLayer('login');
 }
 
 async function carregarPerfil(user){
   currentUser=user;
-  const {data,error}=await sb.from('perfis').select('*').eq('id',user.id).single();
-  if(error||!data){
-    // Tenta criar perfil manualmente se não existir
-    const {data:nd}=await sb.from('perfis').upsert({id:user.id,nome:user.user_metadata?.nome||user.email.split('@')[0],email:user.email,perfil:user.user_metadata?.perfil||'atendente'},{onConflict:'id'}).select().single();
-    currentPerfil=nd;
-  } else {
-    currentPerfil=data;
-  }
+  const {data}=await sb.from('perfis').select('*').eq('id',user.id).single();
+  currentPerfil=data;
   iniciarApp();
 }
 
 // ══ APP INIT ══
 function iniciarApp(){
   const p=currentPerfil;
+  // Sidebar
   const nav=document.getElementById('sidebar-nav');
   const menus=ROLE_MENUS[p.perfil]||ROLE_MENUS.atendente;
   nav.innerHTML=menus.map(m=>{
     if(m.section) return `<div class="nav-section">${m.section}</div>`;
-    return `<div class="nav-item" id="nav-${m.id}" onclick="navClick('${m.id}',this)"><span class="icon">${m.icon}</span>${m.label}</div>`;
+    return `<div class="nav-item" id="nav-${m.id}" onclick="goPage('${m.id}',this)"><span class="icon">${m.icon}</span>${m.label}</div>`;
   }).join('');
+
+  // User info
   document.getElementById('sb-avatar').textContent=(p.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   document.getElementById('sb-nome').textContent=p.nome;
   document.getElementById('sb-role').textContent=ROLE_LABELS[p.perfil];
   const chip=document.getElementById('role-chip');
   chip.textContent=ROLE_LABELS[p.perfil];
   chip.className='role-chip '+p.perfil;
+
   goLayer('app');
   goPage('dashboard');
   carregarTudo();
-  // Carrega config WPP
-  if(wppCfg.url&&wppCfg.key&&wppCfg.inst) preencherWppForm();
-  verificarWpp();
 }
 
-function navClick(id,el){goPage(id,el);}
+// ══ NAVIGATION ══
+const PAGE_CFG = {
+  dashboard:   {title:'Dashboard',              action:'',                    modal:null, roles:['admin','atendente','investidor']},
+  carros:      {title:'Estoque — Carros',        action:'+ Cadastrar Carro',   modal:'veiculo', roles:['admin','atendente']},
+  motos:       {title:'Estoque — Motos',         action:'+ Cadastrar Moto',    modal:'veiculo', roles:['admin','atendente']},
+  historico:   {title:'Histórico & Manutenção',  action:'+ Manutenção',        modal:'manutencao', roles:['admin','atendente']},
+  clientes:    {title:'Clientes',                action:'+ Novo cliente',      modal:'cliente', roles:['admin','atendente']},
+  contratos:   {title:'Contratos',               action:'',                    modal:null, roles:['admin','atendente']},
+  calendario:  {title:'Calendário',              action:'',                    modal:null, roles:['admin','atendente']},
+  chat:        {title:'Chat WhatsApp',           action:'',                    modal:null, roles:['admin','atendente']},
+  usuarios:    {title:'Usuários & Acessos',      action:'',                    modal:null, roles:['admin']},
+  investidores:{title:'Métricas & Investidores', action:'',                    modal:null, roles:['admin','investidor']},
+  denied:      {title:'Acesso negado',           action:'',                    modal:null, roles:['admin','atendente','investidor']},
+};
 
-function goPage(id,navEl){
+function goPage(id, navEl){
   const cfg=PAGE_CFG[id];
   if(!cfg) return;
-  if(!cfg.roles.includes(currentPerfil?.perfil)) id='denied';
+  // Check permission
+  if(!cfg.roles.includes(currentPerfil?.perfil)){
+    id='denied';
+  }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   const pageEl=document.getElementById('page-'+id);
   if(pageEl) pageEl.classList.add('active');
   if(navEl) navEl.classList.add('active');
-  else {const ni=document.getElementById('nav-'+id);if(ni) ni.classList.add('active');}
-  const c=PAGE_CFG[id]||{title:'',action:''};
+  else { const ni=document.getElementById('nav-'+id); if(ni) ni.classList.add('active'); }
+
+  const c=PAGE_CFG[id];
   document.getElementById('page-title').textContent=c.title;
   const btn=document.getElementById('primary-action');
   btn.style.display=c.action?'':'none';
-  btn.textContent=c.action||'';
-  if(c.modal) btn.onclick=()=>openModal(c.modal,id==='motos'?'moto':id==='carros'?'carro':null);
+  btn.textContent=c.action;
+  if(c.modal) btn.onclick=()=>openModal(c.modal, id==='motos'?'moto':id==='carros'?'carro':null);
+
+  // Page-specific init
   if(id==='contratos'){previewContrato();populateContratosSelects();}
-  if(id==='calendario') renderCal();
-  if(id==='chat') renderChatContacts();
-  if(id==='usuarios') renderUsuarios();
-  if(id==='investidores') renderInvestidores();
-  if(id==='historico') renderHistVeiculosList();
+  if(id==='calendario'){renderCal();}
+  if(id==='chat'){renderChatContacts();setTimeout(preencherCamposWpp,200);}
+  if(id==='usuarios'){renderUsuarios();}
+  if(id==='investidores'){renderInvestidores();}
+  if(id==='historico'){renderHistVeiculosList();}
 }
 
-// ══ DATA ══
+// ══ DATA LOADING ══
 async function carregarTudo(){
   await Promise.all([loadVeiculos(),loadClientes(),loadLocacoes(),loadManutencoes()]);
   renderDashboard();
@@ -904,6 +1183,7 @@ function renderDashboard(){
   document.getElementById('st-motos-s').textContent=`de ${motos.length} total`;
   document.getElementById('st-clientes').textContent=allClientes.length;
   document.getElementById('st-locacoes').textContent=allLocacoes.length;
+
   const dl=document.getElementById('dash-loc');
   dl.innerHTML=allLocacoes.length?allLocacoes.map(l=>{
     const diff=Math.ceil((new Date(l.data_fim)-new Date())/86400000);
@@ -911,6 +1191,7 @@ function renderDashboard(){
     const lb=diff<0?'Atrasado':diff===0?'Hoje':'No prazo';
     return `<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="vi ${l.veiculos?.tipo==='carro'?'vi-car':'vi-moto'}">${l.veiculos?.tipo==='carro'?'🚗':'🏍️'}</div><div><div style="font-weight:500">${l.veiculos?.modelo||'—'}</div><div style="font-size:11px;color:var(--muted)">${l.veiculos?.placa||''}</div></div></div></td><td>${l.clientes?.nome||'—'}</td><td>${fmtData(l.data_fim)}</td><td><span class="badge ${b}">${lb}</span></td></tr>`;
   }).join(''):'<tr class="empty-row"><td colspan="4">Nenhuma locação ativa</td></tr>';
+
   const dm=document.getElementById('dash-man');
   const mativas=allManutencoes.filter(m=>m.status!=='concluida');
   dm.innerHTML=mativas.length?mativas.map(m=>`<tr><td><div style="font-weight:500">${m.veiculos?.modelo||'—'}</div><div style="font-size:11px;color:var(--muted)">${m.veiculos?.placa||''}</div></td><td>${m.tipo}</td><td><span class="badge ${m.status==='pendente'?'badge-yellow':'badge-blue'}">${m.status==='pendente'?'Pendente':'Em andamento'}</span></td></tr>`).join(''):'<tr class="empty-row"><td colspan="3">Nenhuma</td></tr>';
@@ -919,50 +1200,39 @@ function renderDashboard(){
 // ══ VEÍCULOS ══
 function statusBadge(s){return s==='disponivel'?'<span class="badge badge-green">Disponível</span>':s==='alugado'?'<span class="badge badge-red">Alugado</span>':'<span class="badge badge-yellow">Manutenção</span>';}
 function renderVeiculos(){
-  [{tipo:'carro',key:'carros'},{tipo:'moto',key:'motos'}].forEach(({tipo,key})=>{
-    const search=(document.getElementById('s-'+key)?.value||'').toLowerCase();
-    const sf=document.getElementById('f-'+key)?.value||'';
+  // carro -> ids: s-carros, f-carros, tb-carros
+  // moto  -> ids: s-motos,  f-motos,  tb-motos
+  const map={carro:'carros', moto:'motos'};
+  Object.entries(map).forEach(([tipo,key])=>{
+    const search=(document.getElementById(`s-${key}`)?.value||'').toLowerCase();
+    const sf=document.getElementById(`f-${key}`)?.value||'';
     const data=allVeiculos.filter(v=>v.tipo===tipo&&(!sf||v.status===sf)&&(!search||`${v.marca} ${v.modelo} ${v.placa}`.toLowerCase().includes(search)));
-    const tb=document.getElementById('tb-'+key);
+    const tb=document.getElementById(`tb-${key}`);
     if(!tb) return;
+    const canEdit=['admin','atendente'].includes(currentPerfil?.perfil);
     tb.innerHTML=data.length?data.map(v=>`
       <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="vi ${v.tipo==='carro'?'vi-car':'vi-moto'}">${v.tipo==='carro'?'🚗':'🏍️'}</div><div><div style="font-weight:500">${v.marca} ${v.modelo}</div><div style="font-size:11px;color:var(--muted)">${v.cor||''} · ${v.cambio||''}</div></div></div></td>
       <td>${v.placa}</td><td>${v.ano||'—'}</td><td>${(v.km_atual||0).toLocaleString('pt-BR')}</td>
       <td style="color:var(--accent);font-weight:600">R$ ${(v.diaria||0).toFixed(2)}</td>
       <td>${statusBadge(v.status)}</td>
-      <td><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="verHistorico('${v.id}')">Histórico</button></td></tr>`).join('')
+      <td>${canEdit?`<button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="verHistorico('${v.id}')">Histórico</button>`:'—'}</td></tr>`).join('')
     :'<tr class="empty-row"><td colspan="7">Nenhum veículo encontrado</td></tr>';
   });
 }
 
 async function salvarVeiculo(){
-  const marca=document.getElementById('mv-marca').value.trim();
-  const modelo=document.getElementById('mv-modelo').value.trim();
-  const placa=document.getElementById('mv-placa').value.trim().toUpperCase();
-  const diaria=parseFloat(document.getElementById('mv-diaria').value)||0;
-  if(!marca||!modelo||!placa||!diaria){notify('Preencha os campos obrigatórios: Marca, Modelo, Placa e Diária','error');return;}
-  const obj={
-    tipo:document.getElementById('mv-tipo').value,
-    marca,modelo,placa,
-    ano:parseInt(document.getElementById('mv-ano').value)||null,
-    cor:document.getElementById('mv-cor').value.trim(),
-    cambio:document.getElementById('mv-cambio').value,
-    km_atual:parseInt(document.getElementById('mv-km').value)||0,
-    diaria,
-    observacoes:document.getElementById('mv-obs').value,
-    status:'disponivel'
-  };
-  const {error}=await sb.from('veiculos').insert([obj]);
-  if(error){notify('Erro ao salvar: '+error.message,'error');return;}
-  notify('Veículo cadastrado com sucesso!','success');
+  const obj={tipo:document.getElementById('mv-tipo').value,marca:document.getElementById('mv-marca').value.trim(),modelo:document.getElementById('mv-modelo').value.trim(),placa:document.getElementById('mv-placa').value.trim().toUpperCase(),ano:parseInt(document.getElementById('mv-ano').value)||null,cor:document.getElementById('mv-cor').value.trim(),cambio:document.getElementById('mv-cambio').value,km_atual:parseInt(document.getElementById('mv-km').value)||0,diaria:parseFloat(document.getElementById('mv-diaria').value)||0,observacoes:document.getElementById('mv-obs').value};
+  if(!obj.marca||!obj.modelo||!obj.placa||!obj.diaria){notify('Preencha os campos obrigatórios','error');return;}
+  const {error}=await sb.from('veiculos').insert(obj);
+  if(error){notify('Erro: '+error.message,'error');return;}
+  notify('Veículo cadastrado!','success');
   closeModal('veiculo');
-  // Limpa campos
-  ['mv-marca','mv-modelo','mv-placa','mv-ano','mv-cor','mv-km','mv-diaria','mv-obs'].forEach(id=>{const el=document.getElementById(id);if(el) el.value='';});
   await loadVeiculos();renderDashboard();
 }
 
 // ══ CLIENTES ══
 function cnhBadge(val){if(!val)return'<span class="badge badge-gray">Não informada</span>';const d=Math.ceil((new Date(val)-new Date())/86400000);return d<0?'<span class="badge badge-red">Vencida</span>':d<60?`<span class="badge badge-yellow">Vence em ${d}d</span>`:'<span class="badge badge-green">Válida</span>';}
+
 function renderClientes(){
   const s=(document.getElementById('s-clientes')?.value||'').toLowerCase();
   const data=allClientes.filter(c=>!s||`${c.nome} ${c.cpf} ${c.telefone||''}`.toLowerCase().includes(s));
@@ -976,23 +1246,12 @@ function renderClientes(){
 }
 
 async function salvarCliente(){
-  const nome=document.getElementById('mc-nome').value.trim();
-  const cpf=document.getElementById('mc-cpf').value.trim();
-  if(!nome||!cpf){notify('Nome e CPF são obrigatórios','error');return;}
-  const obj={
-    nome,cpf,
-    email:document.getElementById('mc-email').value.trim()||null,
-    telefone:document.getElementById('mc-tel').value.trim()||null,
-    cnh:document.getElementById('mc-cnh').value.trim()||null,
-    cnh_validade:document.getElementById('mc-cnh-val').value||null,
-    endereco:document.getElementById('mc-end').value.trim()||null,
-    observacoes:document.getElementById('mc-obs').value||null
-  };
-  const {error}=await sb.from('clientes').insert([obj]);
-  if(error){notify('Erro ao salvar: '+error.message,'error');return;}
-  notify('Cliente cadastrado com sucesso!','success');
+  const obj={nome:document.getElementById('mc-nome').value.trim(),cpf:document.getElementById('mc-cpf').value.trim(),email:document.getElementById('mc-email').value.trim(),telefone:document.getElementById('mc-tel').value.trim(),cnh:document.getElementById('mc-cnh').value.trim(),cnh_validade:document.getElementById('mc-cnh-val').value||null,endereco:document.getElementById('mc-end').value.trim(),observacoes:document.getElementById('mc-obs').value};
+  if(!obj.nome||!obj.cpf){notify('Nome e CPF obrigatórios','error');return;}
+  const {error}=await sb.from('clientes').insert(obj);
+  if(error){notify('Erro: '+error.message,'error');return;}
+  notify('Cliente cadastrado!','success');
   closeModal('cliente');
-  ['mc-nome','mc-cpf','mc-email','mc-tel','mc-cnh','mc-cnh-val','mc-end','mc-obs'].forEach(id=>{const el=document.getElementById(id);if(el) el.value='';});
   await loadClientes();renderDashboard();
 }
 
@@ -1001,10 +1260,11 @@ function renderHistVeiculosList(){filtrarHistVeiculos();}
 function filtrarHistVeiculos(){
   const s=(document.getElementById('s-hist')?.value||'').toLowerCase();
   const data=allVeiculos.filter(v=>!s||`${v.marca} ${v.modelo} ${v.placa}`.toLowerCase().includes(s));
-  document.getElementById('tb-hist-veic').innerHTML=data.map(v=>`<tr style="cursor:pointer" onclick="verHistorico('${v.id}')"><td><div style="font-weight:500">${v.marca} ${v.modelo}</div></td><td>${v.placa}</td></tr>`).join('')||'<tr class="empty-row"><td colspan="2">Nenhum</td></tr>';
+  document.getElementById('tb-hist-veic').innerHTML=data.map(v=>`<tr style="cursor:pointer;${histVeiculoId===v.id?'background:rgba(245,166,35,.06)':''}" onclick="verHistorico('${v.id}')"><td><div style="font-weight:500">${v.marca} ${v.modelo}${histVeiculoId===v.id?' <span style="font-size:10px;color:var(--accent)">📌</span>':''}</div></td><td>${v.placa}</td></tr>`).join('')||'<tr class="empty-row"><td colspan="2">Nenhum</td></tr>';
 }
+
 async function verHistorico(vid){
-  histVeiculoId=vid;
+  histVeiculoId=vid;filtrarHistVeiculos();
   const v=allVeiculos.find(x=>x.id===vid);
   if(v) document.getElementById('hist-title').textContent=`${v.marca} ${v.modelo} — ${v.placa}`;
   const [{data:locs},{data:mans}]=await Promise.all([
@@ -1014,25 +1274,22 @@ async function verHistorico(vid){
   const items=[...(locs||[]).map(l=>({...l,_t:'loc'})),...(mans||[]).map(m=>({...m,_t:'maint'}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   const tl=document.getElementById('hist-tl');
   tl.innerHTML=items.length?items.map(i=>i._t==='loc'
-    ?`<div class="tl-item"><div class="tl-dot rental"></div><div><div class="tl-title">Locação — ${i.clientes?.nome||'—'}</div><div class="tl-sub">${fmtData(i.data_inicio)} a ${fmtData(i.data_fim)} · R$ ${(i.total||0).toFixed(2)}</div><div class="tl-date">${fmtDt(i.created_at)}</div></div></div>`
-    :`<div class="tl-item"><div class="tl-dot maint"></div><div><div class="tl-title">Manutenção — ${i.tipo}</div><div class="tl-sub">${i.oficina||'—'}${i.custo?' · R$ '+parseFloat(i.custo).toFixed(2):''}</div><div class="tl-date">${fmtDt(i.created_at)}</div></div></div>`
+    ?`<div class="tl-item"><div class="tl-dot rental"></div><div class="tl-title">Locação — ${i.clientes?.nome||'—'}</div><div class="tl-sub">${fmtData(i.data_inicio)} a ${fmtData(i.data_fim)} · R$ ${(i.total||0).toFixed(2)}</div><div class="tl-date">${fmtDt(i.created_at)}</div></div>`
+    :`<div class="tl-item"><div class="tl-dot maint"></div><div class="tl-title">Manutenção — ${i.tipo}</div><div class="tl-sub">${i.oficina||'—'}${i.custo?' · R$ '+parseFloat(i.custo).toFixed(2):''}</div><div class="tl-date">${fmtDt(i.created_at)}</div></div>`
   ).join(''):'<p style="color:var(--muted2);font-size:13px">Sem histórico ainda.</p>';
   goPage('historico');
 }
 
 async function salvarManutencao(){
-  const veiculo_id=document.getElementById('mm-vei').value;
-  const tipo=document.getElementById('mm-tipo').value.trim();
-  const data_inicio=document.getElementById('mm-ini').value;
-  if(!veiculo_id||!tipo||!data_inicio){notify('Preencha os campos obrigatórios','error');return;}
-  const obj={veiculo_id,tipo,descricao:document.getElementById('mm-desc').value,oficina:document.getElementById('mm-ofic').value.trim()||null,custo:parseFloat(document.getElementById('mm-custo').value)||0,data_inicio,data_fim:document.getElementById('mm-fim').value||null};
-  await sb.from('veiculos').update({status:'manutencao'}).eq('id',veiculo_id);
-  const {error}=await sb.from('manutencoes').insert([obj]);
+  const obj={veiculo_id:document.getElementById('mm-vei').value,tipo:document.getElementById('mm-tipo').value.trim(),descricao:document.getElementById('mm-desc').value,oficina:document.getElementById('mm-ofic').value.trim(),custo:parseFloat(document.getElementById('mm-custo').value)||0,data_inicio:document.getElementById('mm-ini').value,data_fim:document.getElementById('mm-fim').value||null};
+  if(!obj.veiculo_id||!obj.tipo||!obj.data_inicio){notify('Preencha os campos obrigatórios','error');return;}
+  await sb.from('veiculos').update({status:'manutencao'}).eq('id',obj.veiculo_id);
+  const {error}=await sb.from('manutencoes').insert(obj);
   if(error){notify('Erro: '+error.message,'error');return;}
   notify('Manutenção registrada!','success');
   closeModal('manutencao');
   await loadVeiculos();await loadManutencoes();renderDashboard();
-  if(histVeiculoId===veiculo_id) verHistorico(histVeiculoId);
+  if(histVeiculoId===obj.veiculo_id) verHistorico(histVeiculoId);
 }
 
 // ══ CONTRATOS ══
@@ -1041,9 +1298,13 @@ function populateContratosSelects(){
   if(cs) cs.innerHTML=allClientes.map(c=>`<option value="${c.id}" data-nome="${c.nome}">${c.nome}</option>`).join('');
   const vs=document.getElementById('c-vei');
   const disp=allVeiculos.filter(v=>v.status==='disponivel');
-  if(vs){vs.innerHTML=disp.length?disp.map(v=>`<option value="${v.id}" data-diaria="${v.diaria}">${v.marca} ${v.modelo} — ${v.placa}</option>`).join(''):'<option value="">Nenhum disponível</option>';autoFillDiaria();}
+  if(vs){ vs.innerHTML=disp.map(v=>`<option value="${v.id}" data-diaria="${v.diaria}" data-placa="${v.placa}">${v.marca} ${v.modelo} — ${v.placa}</option>`).join(''); autoFillDiaria(); }
 }
-function autoFillDiaria(){const opt=document.getElementById('c-vei')?.selectedOptions[0];if(opt) document.getElementById('c-dia').value=opt.dataset.diaria||'';previewContrato();}
+function autoFillDiaria(){
+  const opt=document.getElementById('c-vei')?.selectedOptions[0];
+  if(opt) document.getElementById('c-dia').value=opt.dataset.diaria||'';
+  previewContrato();
+}
 function previewContrato(){
   const cOpt=document.getElementById('c-cli')?.selectedOptions[0];
   const vOpt=document.getElementById('c-vei')?.selectedOptions[0];
@@ -1070,8 +1331,9 @@ function previewContrato(){
   const el=document.getElementById(id);
   if(el){el.addEventListener('input',previewContrato);el.addEventListener('change',previewContrato);}
 });
+
 async function registrarContrato(){
-  const {totalVal}=previewContrato();
+  const {dias,totalVal}=previewContrato();
   const cid=document.getElementById('c-cli')?.value;
   const vid=document.getElementById('c-vei')?.value;
   const ini=document.getElementById('c-ini')?.value;
@@ -1079,8 +1341,8 @@ async function registrarContrato(){
   const dia=parseFloat(document.getElementById('c-dia')?.value)||0;
   const km=parseInt(document.getElementById('c-km')?.value)||0;
   const obs=document.getElementById('c-obs')?.value;
-  if(!cid||!vid||!ini||!fim){notify('Preencha todos os campos do contrato','error');return;}
-  const {error}=await sb.from('locacoes').insert([{veiculo_id:vid,cliente_id:cid,data_inicio:ini,data_fim:fim,km_inicial:km,diaria:dia,total:totalVal,observacoes:obs,criado_por:currentUser.id}]);
+  if(!cid||!vid||!ini||!fim){notify('Preencha todos os campos','error');return;}
+  const {error}=await sb.from('locacoes').insert({veiculo_id:vid,cliente_id:cid,data_inicio:ini,data_fim:fim,km_inicial:km,diaria:dia,total:totalVal,observacoes:obs,criado_por:currentUser.id});
   if(error){notify('Erro: '+error.message,'error');return;}
   await sb.from('veiculos').update({status:'alugado'}).eq('id',vid);
   notify('Contrato registrado! Veículo marcado como alugado.','success');
@@ -1097,7 +1359,8 @@ function renderCal(){
   allLocacoes.forEach(l=>{
     for(let d=new Date(l.data_inicio);d<=new Date(l.data_fim);d.setDate(d.getDate()+1)){
       if(d.getFullYear()===calYear&&d.getMonth()===calMonth){
-        const k=d.getDate();if(!busy[k]) busy[k]=[];
+        const k=d.getDate();
+        if(!busy[k]) busy[k]=[];
         busy[k].push(l.veiculos?.tipo||'carro');
       }
     }
@@ -1113,6 +1376,7 @@ function renderCal(){
   document.getElementById('cal-grid').innerHTML=html;
 }
 function changeMonth(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCal();}
+
 async function calSelectDay(d){
   document.getElementById('cal-sel-date').textContent=`${d} de ${MONTHS[calMonth]}`;
   const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -1125,219 +1389,475 @@ async function calSelectDay(d){
   }).join('')||'<p style="color:var(--muted2)">Sem veículos.</p>';
 }
 
-// ══ WHATSAPP (Evolution API) ══
-function fmtPhone(tel){
-  if(!tel) return null;
-  let n=tel.replace(/\D/g,'');
-  if(n.startsWith('0')) n=n.slice(1);
-  if(!n.startsWith('55')) n='55'+n;
-  return n;
-}
-
-function preencherWppForm(){
-  const u=document.getElementById('wpp-url');
-  const k=document.getElementById('wpp-key');
-  const i=document.getElementById('wpp-inst');
-  if(u) u.value=wppCfg.url||'';
-  if(k) k.value=wppCfg.key||'';
-  if(i) i.value=wppCfg.inst||'';
-}
-
-async function verificarWpp(){
-  if(!wppCfg.url||!wppCfg.key||!wppCfg.inst){
-    setWppStatus(false,'Não configurado');
-    return;
-  }
-  try{
-    const r=await fetch(`${wppCfg.url}/instance/fetchInstances`,{headers:{'apikey':wppCfg.key},signal:AbortSignal.timeout(5000)});
-    wppOk=r.ok;
-    setWppStatus(r.ok, r.ok?'Conectado':'Erro na conexão');
-  }catch(e){
-    wppOk=false;
-    setWppStatus(false,'Sem resposta da API');
-  }
-}
-
-function setWppStatus(ok, msg){
-  const badge=document.getElementById('wpp-status-badge');
-  const hdr=document.getElementById('wpp-status-hdr');
-  if(badge){
-    badge.style.background=ok?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)';
-    badge.style.borderColor=ok?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)';
-    badge.innerHTML=`<div class="wdot" style="background:${ok?'var(--green)':'var(--red)'}"></div><span style="color:${ok?'var(--green)':'var(--red)'}">${msg}</span>`;
-  }
-  if(hdr) hdr.innerHTML=`● <span style="color:${ok?'var(--green)':'var(--muted)'}">${msg}</span>`;
-}
-
-async function salvarWpp(){
-  const url=(document.getElementById('wpp-url')?.value||'').trim().replace(/\/$/,'');
-  const key=(document.getElementById('wpp-key')?.value||'').trim();
-  const inst=(document.getElementById('wpp-inst')?.value||'').trim();
-  if(!url||!key||!inst){notify('Preencha URL, API Key e Instância','error');return;}
-  const btn=document.querySelector('button[onclick="salvarWpp()"]');
-  if(btn){btn.textContent='⏳ Conectando...';btn.disabled=true;}
-  try{
-    const r=await fetch(`${url}/instance/fetchInstances`,{headers:{'apikey':key},signal:AbortSignal.timeout(6000)});
-    if(!r.ok) throw new Error('Resposta '+r.status);
-    wppCfg={url,key,inst};
-    localStorage.setItem('fp_wpp',JSON.stringify(wppCfg));
-    wppOk=true;
-    setWppStatus(true,'Conectado');
-    notify('WhatsApp conectado!','success');
-  }catch(e){
-    wppOk=false;
-    setWppStatus(false,'Falhou: '+e.message);
-    notify('Erro ao conectar: '+e.message,'error');
-  }
-  if(btn){btn.textContent='⚡ Conectar WhatsApp';btn.disabled=false;}
-}
-
-function limparWpp(){
-  wppCfg={};wppOk=false;
-  localStorage.removeItem('fp_wpp');
-  preencherWppForm();
-  setWppStatus(false,'Não configurado');
-  notify('Configuração WhatsApp removida','success');
-}
-
-async function evoGetMsgs(phone){
-  if(!wppOk||!wppCfg.url) return [];
-  try{
-    const r=await fetch(`${wppCfg.url}/chat/findMessages/${wppCfg.inst}`,{
-      method:'POST',
-      headers:{'apikey':wppCfg.key,'Content-Type':'application/json'},
-      body:JSON.stringify({where:{key:{remoteJid:phone+'@s.whatsapp.net'}},limit:50}),
-      signal:AbortSignal.timeout(8000)
-    });
-    if(!r.ok) return [];
-    const data=await r.json();
-    const msgs=Array.isArray(data)?data:(data.messages?.records||data.records||[]);
-    return msgs.map(m=>({
-      text:m.message?.conversation||m.message?.extendedTextMessage?.text||m.message?.imageMessage?.caption||'📎 Mídia',
-      out:m.key?.fromMe===true,
-      time:new Date((m.messageTimestamp||0)*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
-      ts:m.messageTimestamp||0
-    })).sort((a,b)=>a.ts-b.ts);
-  }catch(e){return [];}
-}
-
-async function evoSend(phone,text){
-  if(!wppOk||!wppCfg.url) return false;
-  try{
-    const r=await fetch(`${wppCfg.url}/message/sendText/${wppCfg.inst}`,{
-      method:'POST',
-      headers:{'apikey':wppCfg.key,'Content-Type':'application/json'},
-      body:JSON.stringify({number:phone,text}),
-      signal:AbortSignal.timeout(8000)
-    });
-    return r.ok;
-  }catch(e){return false;}
-}
-
 // ══ CHAT ══
-function renderChatContacts(){
-  const s=(document.getElementById('chat-search')?.value||'').toLowerCase();
-  const data=allClientes.filter(c=>!s||c.nome.toLowerCase().includes(s)||( c.telefone&&c.telefone.includes(s)));
-  document.getElementById('chat-contacts').innerHTML=data.map(c=>{
-    const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const last=(chatMsgs[c.id]||[]).slice(-1)[0]?.text||'Toque para abrir';
-    const hasTel=!!c.telefone;
-    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')">
-      <div class="cavatar" style="background:${hasTel?'rgba(34,197,94,.12)':'var(--bg3)'};color:${hasTel?'var(--green)':'var(--muted)'}">${ini}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500">${c.nome}</div>
-        <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px">${hasTel?last:'<span style="color:var(--red)">Sem telefone</span>'}</div>
-      </div>
-    </div>`;
-  }).join('')||'<div style="padding:16px;font-size:12px;color:var(--muted)">Sem clientes</div>';
+// ════════════════════════════════════════
+// WHATSAPP — integração real Evolution API v2
+// ════════════════════════════════════════
+let wppCfg = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
+let wppOk = false;
+let mediaQueue = null; // {file, tipo, base64}
+let mediaRec = null;   // MediaRecorder para gravar áudio
+let recChunks = [];
+
+function atualizarStatusWpp(ok){
+  wppOk = ok;
+  const badge = document.getElementById('wpp-status-badge');
+  const okBadge = document.getElementById('wpp-ok-badge');
+  if(badge) badge.innerHTML = ok
+    ? '<span style="color:var(--green)">🟢 Conectado</span>'
+    : '<span style="color:var(--red)">🔴 Desconectado</span>';
+  if(okBadge) okBadge.innerHTML = ok
+    ? '<div class="wdot"></div>WhatsApp conectado'
+    : '<div class="wdot" style="background:var(--red)"></div><span style="color:var(--red)">Desconectado — configure ao lado</span>';
 }
 
-async function abrirChat(cid){
-  activeChatId=cid;
-  const c=allClientes.find(x=>x.id===cid);
-  if(!c) return;
-  const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-  document.getElementById('chat-av').textContent=ini;
-  document.getElementById('chat-name').textContent=c.nome;
-  document.getElementById('chat-info').textContent=c.telefone?'📱 '+c.telefone:'Sem telefone cadastrado';
-  renderChatContacts();
-  if(!c.telefone){
-    document.getElementById('chat-msgs').innerHTML='<div style="text-align:center;font-size:12px;color:var(--red);margin:20px 0">⚠️ Cliente sem telefone cadastrado</div>';
+// SSE connection handle
+let sseEventSource = null;
+
+async function conectarWpp(){
+  const evoUrl  = (document.getElementById('wpp-url')?.value||wppCfg.apiUrl||'').trim().replace(/\/$/,'');
+  const apiKey  = (document.getElementById('wpp-apikey')?.value||wppCfg.apiKey||'').trim();
+  const inst    = (document.getElementById('wpp-inst')?.value||wppCfg.instancia||'fleetpro').trim();
+  const bridgeUrl= (document.getElementById('wpp-bridge')?.value||wppCfg.bridgeUrl||'').trim().replace(/\/$/,'');
+  const secret  = (document.getElementById('wpp-secret')?.value||wppCfg.secret||'fleetpro-secret-2025').trim();
+
+  if(!evoUrl||!apiKey){ notify('Preencha URL da Evolution API e API Key','error'); return; }
+  if(!bridgeUrl){ notify('Preencha a URL do Bridge Server','error'); return; }
+
+  // 1. Testa conexão com a Evolution API
+  try{
+    const r = await fetch(`${evoUrl}/instance/fetchInstances`,{
+      headers:{'apikey':apiKey,'Content-Type':'application/json'}
+    });
+    if(!r.ok) throw new Error(`Evolution API: HTTP ${r.status}`);
+  }catch(e){
+    atualizarStatusWpp(false);
+    notify('Erro Evolution API: '+e.message,'error');
     return;
   }
-  document.getElementById('chat-msgs').innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">⏳ Carregando...</div>';
-  const phone=fmtPhone(c.telefone);
-  const msgs=await evoGetMsgs(phone);
-  if(msgs.length>0) chatMsgs[cid]=msgs;
-  renderChatMsgs(cid);
+
+  // 2. Salva config
+  wppCfg={apiUrl:evoUrl, apiKey, instancia:inst, bridgeUrl, secret};
+  localStorage.setItem('fp_wpp',JSON.stringify(wppCfg));
+
+  // 3. Conecta SSE para recebimento em tempo real
+  conectarSSE(bridgeUrl, secret);
+
+  atualizarStatusWpp(true);
+  notify('WhatsApp conectado! Aguardando mensagens...','success');
+
+  // Mostra URL do webhook para configurar no n8n
+  const whUrl = document.getElementById('webhook-url-display');
+  if(whUrl) whUrl.textContent = `${bridgeUrl}/webhook/wpp  (header x-secret: ${secret})`;
 }
 
-async function recarregarMsgs(){
-  if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone) return;
-  const phone=fmtPhone(c.telefone);
-  const msgs=await evoGetMsgs(phone);
-  if(msgs.length>0){chatMsgs[activeChatId]=msgs;renderChatMsgs(activeChatId);}
-  else notify('Nenhuma mensagem encontrada','error');
+function conectarSSE(bridgeUrl, secret){
+  // Fecha conexão anterior se existir
+  if(sseEventSource){ sseEventSource.close(); sseEventSource=null; }
+
+  const url = `${bridgeUrl}/events?secret=${encodeURIComponent(secret)}`;
+  sseEventSource = new EventSource(url);
+
+  sseEventSource.onopen = ()=>{
+    console.log('[SSE] Conectado ao bridge server');
+    atualizarStatusWpp(true);
+  };
+
+  sseEventSource.onmessage = (e)=>{
+    try{
+      const msg = JSON.parse(e.data);
+      if(msg.tipo==='wpp_msg_recebida') processarMsgRecebida(msg);
+    }catch(_){}
+  };
+
+  sseEventSource.onerror = ()=>{
+    console.warn('[SSE] Conexão perdida, tentando reconectar em 5s...');
+    atualizarStatusWpp(false);
+    setTimeout(()=>{
+      if(wppCfg.bridgeUrl) conectarSSE(wppCfg.bridgeUrl, wppCfg.secret);
+    }, 5000);
+  };
 }
 
-function renderChatMsgs(cid){
-  const msgs=chatMsgs[cid]||[];
-  const area=document.getElementById('chat-msgs');
-  area.innerHTML=msgs.length
-    ?msgs.map(m=>`<div class="msg ${m.out?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>`).join('')
-    :'<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Nenhuma mensagem ainda</div>';
-  area.scrollTop=area.scrollHeight;
-}
+function processarMsgRecebida(msg){
+  // msg = { numero, clienteId, nomeCliente, texto, tipoMsg, mediaUrl, createdAt }
+  const cid = msg.clienteId || msg.numero;
+  if(!chatMsgs[cid]) chatMsgs[cid]=[];
+  chatMsgs[cid].push({
+    texto:    msg.texto,
+    tipo:     msg.tipoMsg||'text',
+    direcao:  'entrada',
+    media_url:msg.mediaUrl||null,
+    created_at:msg.createdAt||new Date().toISOString(),
+  });
 
-async function sendMsg(){
-  if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone){notify('Cliente sem telefone cadastrado','error');return;}
-  const inp=document.getElementById('chat-msg-input');
-  const text=inp.value.trim();
-  if(!text) return;
-  inp.value='';
-  const phone=fmtPhone(c.telefone);
-  const now2=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
-  chatMsgs[activeChatId].push({text,out:true,time:now2,ts:Date.now()/1000});
-  renderChatMsgs(activeChatId);
-  if(wppOk){
-    const ok=await evoSend(phone,text);
-    if(ok) notify('✓ Mensagem enviada','success');
-    else notify('Erro ao enviar pelo WhatsApp','error');
-  }
-}
-
-function setMsg(t){document.getElementById('chat-msg-input').value=t;}
-
-// Auto-refresh chat a cada 20s
-setInterval(async()=>{
-  if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone||!wppOk) return;
-  const msgs=await evoGetMsgs(fmtPhone(c.telefone));
-  if(msgs.length>(chatMsgs[activeChatId]||[]).length){
-    chatMsgs[activeChatId]=msgs;
+  // Atualiza UI se a conversa estiver aberta
+  if(activeChatId===cid || activeChatId===msg.clienteId){
     renderChatMsgs(activeChatId);
-    renderChatContacts();
   }
-},20000);
+  renderChatContacts();
 
-// ══ USUÁRIOS ══
+  // Notificação visual + sonora
+  const nome = msg.nomeCliente||msg.numero;
+  const preview = msg.texto ? msg.texto.slice(0,40) : '(mídia)';
+  notify(`💬 ${nome}: ${preview}`, 'success');
+
+  // Badge no título da aba
+  document.title = `(!) FleetPro — Nova mensagem de ${nome}`;
+  setTimeout(()=>{ document.title='FleetPro — Sistema de Locadora'; }, 5000);
+}
+
+// Carrega config salva nos inputs ao abrir o chat
+function preencherCamposWpp(){
+  if(wppCfg.apiUrl)    { const el=document.getElementById('wpp-url');    if(el) el.value=wppCfg.apiUrl; }
+  if(wppCfg.apiKey)    { const el=document.getElementById('wpp-apikey'); if(el) el.value=wppCfg.apiKey; }
+  if(wppCfg.instancia) { const el=document.getElementById('wpp-inst');   if(el) el.value=wppCfg.instancia; }
+  if(wppCfg.bridgeUrl) { const el=document.getElementById('wpp-bridge'); if(el) el.value=wppCfg.bridgeUrl; }
+  if(wppCfg.secret)    { const el=document.getElementById('wpp-secret'); if(el) el.value=wppCfg.secret; }
+  // Reconecta SSE se tiver config completa
+  if(wppCfg.bridgeUrl && wppCfg.secret){
+    conectarSSE(wppCfg.bridgeUrl, wppCfg.secret);
+    atualizarStatusWpp(true);
+  }
+}
+
+// ── ENVIO DE TEXTO ──
+async function evoSendText(numero, texto){
+  const num = '55'+numero.replace(/\D/g,'');
+  const r = await fetch(`${wppCfg.apiUrl}/message/sendText/${wppCfg.instancia}`,{
+    method:'POST',
+    headers:{'apikey':wppCfg.apiKey,'Content-Type':'application/json'},
+    body:JSON.stringify({number:num, text:texto, delay:1000})
+  });
+  if(!r.ok){ const e=await r.text(); throw new Error(e); }
+  return await r.json();
+}
+
+// ── ENVIO DE MÍDIA (imagem/áudio/documento) ──
+async function evoSendMedia(numero, tipo, base64, nomeArq, caption=''){
+  const num = '55'+numero.replace(/\D/g,'');
+  let endpoint, body;
+  if(tipo==='image'){
+    endpoint='sendMedia';
+    body={number:num, mediatype:'image', mimetype:'image/jpeg', media:base64, fileName:nomeArq, caption};
+  } else if(tipo==='audio'){
+    endpoint='sendWhatsAppAudio';
+    body={number:num, audio:base64, delay:500};
+  } else {
+    endpoint='sendMedia';
+    body={number:num, mediatype:'document', mimetype:'application/pdf', media:base64, fileName:nomeArq, caption};
+  }
+  const r = await fetch(`${wppCfg.apiUrl}/message/${endpoint}/${wppCfg.instancia}`,{
+    method:'POST',
+    headers:{'apikey':wppCfg.apiKey,'Content-Type':'application/json'},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){ const e=await r.text(); throw new Error(e); }
+  return await r.json();
+}
+
+// ── SALVAR MENSAGEM NO SUPABASE ──
+async function salvarMsgDB(clienteId, numero, texto, tipo, direcao, mediaUrl=''){
+  if(!sb) return;
+  await sb.from('wpp_mensagens').insert({
+    cliente_id:clienteId, numero, texto, tipo, direcao,
+    media_url:mediaUrl||null,
+    created_at:new Date().toISOString()
+  }).catch(()=>{});
+}
+
+// ── CARREGAR MENSAGENS DO SUPABASE ──
+async function carregarMsgsDB(clienteId){
+  if(!sb) return [];
+  const {data} = await sb.from('wpp_mensagens')
+    .select('*').eq('cliente_id',clienteId)
+    .order('created_at',{ascending:true}).limit(200);
+  return data||[];
+}
+
+// ── RENDER DE MENSAGENS ──
+function renderMsg(m){
+  const out = m.direcao==='saida';
+  const t   = m.created_at ? new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : m.time||'';
+  let corpo = '';
+  if(m.tipo==='image' && m.media_url){
+    corpo = `<img src="${m.media_url}" style="max-width:220px;border-radius:8px;display:block;margin-bottom:4px">`;
+    if(m.texto) corpo += `<div style="font-size:12px">${m.texto}</div>`;
+  } else if(m.tipo==='audio' && m.media_url){
+    corpo = `<audio controls style="max-width:220px"><source src="${m.media_url}"></audio>`;
+  } else if(m.tipo==='document' && m.media_url){
+    corpo = `<a href="${m.media_url}" target="_blank" style="color:var(--accent);font-size:13px">📄 ${m.texto||'Documento'}</a>`;
+  } else {
+    corpo = `<div style="white-space:pre-wrap">${(m.texto||'').replace(/</g,'&lt;')}</div>`;
+  }
+  return `<div class="msg ${out?'msg-out':'msg-in'}">${corpo}<div class="msg-time">${t}</div></div>`;
+}
+
+async function renderChatMsgs(cid){
+  const area = document.getElementById('chat-msgs');
+  area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:20px">Carregando...</div>';
+  const msgs = await carregarMsgsDB(cid);
+  // Merge com mensagens locais ainda não salvas
+  const locais = (chatMsgs[cid]||[]).filter(m=>m._local);
+  const todas  = [...msgs, ...locais].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+  area.innerHTML = todas.length
+    ? todas.map(renderMsg).join('')
+    : '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda. Inicie a conversa!</div>';
+  area.scrollTop = area.scrollHeight;
+}
+
+function renderChatContacts(){
+  const s = (document.getElementById('chat-search')?.value||'').toLowerCase();
+  const clientes = allClientes.filter(c=>!s||c.nome.toLowerCase().includes(s)||(c.telefone||'').includes(s));
+  document.getElementById('chat-contacts').innerHTML = clientes.map(c=>{
+    const ini = (c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const lastMsg = (chatMsgs[c.id]||[]).slice(-1)[0];
+    const preview = lastMsg?.texto||'Toque para abrir conversa';
+    const unread  = (chatMsgs[c.id]||[]).filter(m=>!m.direcao||m.direcao==='entrada'&&!m._lido).length;
+    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')">
+      <div class="cavatar" style="background:var(--bg3)">${ini}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;font-weight:500">${c.nome}</span>
+          ${lastMsg?`<span style="font-size:10px;color:var(--muted2)">${new Date(lastMsg.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>`:''}
+        </div>
+        <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px">${preview}</div>
+      </div>
+      ${unread>0?`<span style="background:var(--green);color:#000;font-size:10px;font-weight:700;border-radius:99px;padding:2px 6px;flex-shrink:0">${unread}</span>`:''}
+    </div>`;
+  }).join('')||'<div style="padding:16px;font-size:12px;color:var(--muted)">Nenhum cliente cadastrado</div>';
+}
+
+function filtrarContatos(){ renderChatContacts(); }
+
+function abrirChat(cid){
+  activeChatId = cid;
+  const c = allClientes.find(x=>x.id===cid);
+  if(!c) return;
+  const ini = (c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  document.getElementById('chat-av').textContent = ini;
+  document.getElementById('chat-av').style.background = 'rgba(245,166,35,.15)';
+  document.getElementById('chat-av').style.color = 'var(--accent)';
+  document.getElementById('chat-name').textContent = c.nome;
+  document.getElementById('chat-info').textContent = (c.telefone||'—')+' · '+((chatMsgs[cid]||[]).length)+' msgs';
+  renderChatMsgs(cid);
+  renderChatContacts();
+  if(!document.getElementById('page-chat').classList.contains('active')) goPage('chat');
+}
+
+// ── ENVIO PRINCIPAL ──
+async function sendMsg(){
+  if(!activeChatId){ notify('Selecione um contato','error'); return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c?.telefone){ notify('Cliente sem telefone cadastrado','error'); return; }
+
+  // Se tem arquivo na fila
+  if(mediaQueue){
+    await enviarMidia(c);
+    return;
+  }
+
+  const inp  = document.getElementById('chat-msg-input');
+  let texto  = inp.value.trim();
+  if(!texto) return;
+
+  // Adiciona assinatura se marcado
+  const usarAssin = document.getElementById('wpp-usar-assinatura')?.checked;
+  const assin     = document.getElementById('wpp-assinatura')?.value||'';
+  if(usarAssin && assin) texto = texto+'\n'+assin;
+
+  // Mensagem local imediata (UX otimista)
+  const msgLocal = {texto, tipo:'text', direcao:'saida', created_at:new Date().toISOString(), _local:true};
+  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+  chatMsgs[activeChatId].push(msgLocal);
+  inp.value='';
+  renderChatMsgs(activeChatId);
+  renderChatContacts();
+
+  // Envia pelo WhatsApp real
+  if(wppOk){
+    try{
+      await evoSendText(c.telefone, texto);
+      await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida');
+      notify('Mensagem enviada ✓','success');
+    }catch(e){
+      notify('Erro ao enviar: '+e.message,'error');
+    }
+  } else {
+    notify('WhatsApp não conectado — configure ao lado','error');
+  }
+}
+
+async function enviarMidia(c){
+  if(!mediaQueue) return;
+  const {file, tipo, base64} = mediaQueue;
+  const caption = document.getElementById('chat-msg-input').value.trim();
+
+  const msgLocal = {texto:caption||file.name, tipo, direcao:'saida', created_at:new Date().toISOString(), _local:true,
+    media_url: tipo==='image' ? URL.createObjectURL(file) : null};
+  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+  chatMsgs[activeChatId].push(msgLocal);
+  cancelarArquivo();
+  renderChatMsgs(activeChatId);
+
+  if(wppOk){
+    try{
+      await evoSendMedia(c.telefone, tipo, base64, file.name, caption);
+      await salvarMsgDB(activeChatId, c.telefone, caption||file.name, tipo, 'saida');
+      notify('Mídia enviada ✓','success');
+    }catch(e){
+      notify('Erro ao enviar mídia: '+e.message,'error');
+    }
+  } else {
+    notify('WhatsApp não conectado','error');
+  }
+}
+
+// ── ARQUIVOS ──
+function selecionarArquivo(input, tipo){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const base64 = e.target.result.split(',')[1];
+    mediaQueue = {file, tipo, base64};
+    const prev = document.getElementById('file-preview');
+    document.getElementById('file-preview-name').textContent = `${tipo==='image'?'🖼':'🎵'} ${file.name} (${(file.size/1024).toFixed(0)}KB)`;
+    prev.style.display='flex';
+    document.getElementById('chat-msg-input').placeholder = 'Legenda (opcional)...';
+  };
+  reader.readAsDataURL(file);
+}
+
+function cancelarArquivo(){
+  mediaQueue=null;
+  const prev=document.getElementById('file-preview');
+  if(prev) prev.style.display='none';
+  document.getElementById('chat-msg-input').placeholder='Digite uma mensagem...';
+  document.getElementById('file-img').value='';
+  document.getElementById('file-audio').value='';
+}
+
+// ── GRAVAÇÃO DE ÁUDIO ──
+async function toggleRecord(){
+  const btn = document.getElementById('btn-record');
+  if(mediaRec && mediaRec.state==='recording'){
+    mediaRec.stop();
+    btn.textContent='🎙'; btn.style.color='var(--muted)';
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    recChunks=[];
+    mediaRec = new MediaRecorder(stream, {mimeType:'audio/webm'});
+    mediaRec.ondataavailable = e=>recChunks.push(e.data);
+    mediaRec.onstop = ()=>{
+      const blob = new Blob(recChunks, {type:'audio/webm'});
+      const file = new File([blob],'audio.webm',{type:'audio/webm'});
+      const reader = new FileReader();
+      reader.onload = e=>{
+        mediaQueue = {file, tipo:'audio', base64:e.target.result.split(',')[1]};
+        document.getElementById('file-preview-name').textContent='🎙 Áudio gravado (pronto para enviar)';
+        document.getElementById('file-preview').style.display='flex';
+      };
+      reader.readAsDataURL(blob);
+      stream.getTracks().forEach(t=>t.stop());
+    };
+    mediaRec.start();
+    btn.textContent='⏹'; btn.style.color='var(--red)';
+    notify('Gravando... clique ⏹ para parar','success');
+  }catch(e){
+    notify('Permissão de microfone negada','error');
+  }
+}
+
+// ── ENVIAR CONTRATO ──
+async function enviarContrato(){
+  if(!activeChatId){ notify('Selecione um contato primeiro','error'); return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
+  if(!wppOk){ notify('Configure o WhatsApp primeiro','error'); return; }
+  // Gera texto do contrato
+  const texto = `📄 *CONTRATO FLEETPRO*\n\nCliente: ${c.nome}\nCPF: ${c.cpf}\n\nAcesse o sistema para ver o contrato completo e assinar.\n\n_Equipe FleetPro 🚗🏍️_`;
+  try{
+    await evoSendText(c.telefone, texto);
+    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida');
+    notify('Contrato enviado pelo WhatsApp!','success');
+    renderChatMsgs(activeChatId);
+  }catch(e){
+    notify('Erro: '+e.message,'error');
+  }
+}
+
+// ── RECEBIMENTO via n8n webhook ──
+// O n8n faz POST para esta função via postMessage (se no mesmo domínio)
+// ou você expõe um endpoint no seu backend que chama receberMsgWpp()
+async function receberMsgWpp(payload){
+  // payload da Evolution API v2:
+  // { data: { key: { remoteJid }, message: { conversation / imageMessage / audioMessage }, messageType } }
+  try{
+    const jid     = payload?.data?.key?.remoteJid||'';
+    const numero  = jid.replace('@s.whatsapp.net','').replace('@g.us','');
+    const tipo    = payload?.data?.messageType||'conversation';
+    let texto='', mediaUrl='', tipoMsg='text';
+
+    if(tipo==='conversation'||tipo==='extendedTextMessage'){
+      texto = payload?.data?.message?.conversation || payload?.data?.message?.extendedTextMessage?.text||'';
+    } else if(tipo==='imageMessage'){
+      tipoMsg='image';
+      texto = payload?.data?.message?.imageMessage?.caption||'';
+      mediaUrl = payload?.data?.message?.imageMessage?.url||'';
+    } else if(tipo==='audioMessage'||tipo==='pttMessage'){
+      tipoMsg='audio';
+      mediaUrl = payload?.data?.message?.audioMessage?.url||payload?.data?.message?.pttMessage?.url||'';
+    } else if(tipo==='documentMessage'){
+      tipoMsg='document';
+      texto = payload?.data?.message?.documentMessage?.fileName||'Documento';
+      mediaUrl = payload?.data?.message?.documentMessage?.url||'';
+    } else { return; }
+
+    // Encontra cliente pelo número
+    const numLimpo = numero.replace(/\D/g,'').slice(-11);
+    const cliente = allClientes.find(c=>(c.telefone||'').replace(/\D/g,'').slice(-11)===numLimpo);
+    const cid = cliente?.id||numero;
+
+    // Salva no DB e na memória local
+    const msg = {texto, tipo:tipoMsg, direcao:'entrada', created_at:new Date().toISOString(), media_url:mediaUrl};
+    if(!chatMsgs[cid]) chatMsgs[cid]=[];
+    chatMsgs[cid].push(msg);
+    if(sb) await salvarMsgDB(cid, numero, texto, tipoMsg, 'entrada', mediaUrl);
+
+    // Atualiza UI se conversa aberta
+    if(activeChatId===cid) renderChatMsgs(cid);
+    renderChatContacts();
+
+    // Notificação
+    const nomeExib = cliente?.nome||numero;
+    notify(`💬 Nova msg de ${nomeExib}${texto?' : '+texto.slice(0,30):' (mídia)'}`, 'success');
+
+  }catch(e){ console.error('receberMsgWpp error:',e); }
+}
+
+// Escuta mensagens vindas do n8n via postMessage (quando n8n e sistema no mesmo domínio)
+window.addEventListener('message', e=>{
+  if(e.data?.tipo==='wpp_msg_recebida') receberMsgWpp(e.data.payload);
+});
+
+function setMsg(t){ document.getElementById('chat-msg-input').value=t; }
+
+// ══ USUÁRIOS (admin only) ══
 async function renderUsuarios(){
   const {data}=await sb.from('perfis').select('*').order('created_at');
   allPerfis=data||[];
   document.getElementById('usuarios-list').innerHTML=allPerfis.map(u=>{
     const isMe=u.id===currentUser?.id;
     const rBadge=u.perfil==='admin'?'badge-yellow':u.perfil==='atendente'?'badge-blue':'badge-purple';
+    const rLabel=ROLE_LABELS[u.perfil];
     return `<div class="user-card">
       <div class="cavatar" style="width:42px;height:42px;font-size:14px;background:rgba(245,166,35,.12);color:var(--accent)">${(u.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}</div>
       <div class="uc-info"><div class="uc-name">${u.nome}${isMe?' <span style="font-size:10px;color:var(--muted)">(você)</span>':''}</div><div class="uc-email">${u.email}</div></div>
       <div class="uc-actions">
-        <span class="badge ${rBadge}">${ROLE_LABELS[u.perfil]}</span>
+        <span class="badge ${rBadge}">${rLabel}</span>
         ${!isMe?`<select onchange="alterarPerfil('${u.id}',this.value)" style="font-size:12px;padding:5px 8px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;cursor:pointer">
           <option value="atendente" ${u.perfil==='atendente'?'selected':''}>Atendente</option>
           <option value="admin" ${u.perfil==='admin'?'selected':''}>Admin</option>
@@ -1347,46 +1867,71 @@ async function renderUsuarios(){
     </div>`;
   }).join('')||'<p style="color:var(--muted2)">Nenhum usuário encontrado.</p>';
 }
+
 async function alterarPerfil(uid,novoPerfil){
   const {error}=await sb.from('perfis').update({perfil:novoPerfil}).eq('id',uid);
   if(error){notify('Erro: '+error.message,'error');return;}
-  notify('Perfil atualizado!','success');renderUsuarios();
+  notify('Perfil atualizado!','success');
+  renderUsuarios();
 }
 
 // ══ INVESTIDORES ══
 function renderInvestidores(){
   const el=document.getElementById('page-investidores');
-  const stats=`<div class="stats-grid">
-    <div class="stat-card" style="--accent-color:var(--green)"><div class="stat-icon">💰</div><div class="stat-label">Receita estimada/mês</div><div class="stat-val" style="color:var(--green)">R$ ${calcReceitaMes()}</div><div class="stat-sub">locações ativas</div></div>
-    <div class="stat-card" style="--accent-color:var(--blue)"><div class="stat-icon">🚗</div><div class="stat-label">Total de veículos</div><div class="stat-val" style="color:var(--blue)">${allVeiculos.length}</div><div class="stat-sub">${allVeiculos.filter(v=>v.status==='disponivel').length} disponíveis</div></div>
-    <div class="stat-card" style="--accent-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-label">Locações ativas</div><div class="stat-val" style="color:var(--accent)">${allLocacoes.length}</div><div class="stat-sub">ocupação: ${calcOcupacao()}%</div></div>
-    <div class="stat-card" style="--accent-color:var(--purple)"><div class="stat-icon">👥</div><div class="stat-label">Clientes</div><div class="stat-val" style="color:var(--purple)">${allClientes.length}</div><div class="stat-sub">cadastrados</div></div>
-  </div>`;
-  const adminNote=currentPerfil?.perfil==='admin'?`<div style="margin-bottom:20px;padding:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:10px;font-size:13px;color:var(--purple)">📊 Investidores com login próprio veem apenas esta área.</div>`:'';
-  el.innerHTML=adminNote+stats+`<div class="card"><div class="card-header"><span class="card-title">Relatório de frota</span></div>
-    <table><thead><tr><th>Veículo</th><th>Tipo</th><th>Status</th><th>Diária</th></tr></thead>
-    <tbody>${allVeiculos.map(v=>`<tr><td><div style="font-weight:500">${v.marca} ${v.modelo}</div><div style="font-size:11px;color:var(--muted)">${v.placa}</div></td><td>${v.tipo==='carro'?'🚗 Carro':'🏍️ Moto'}</td><td>${statusBadge(v.status)}</td><td style="color:var(--accent);font-weight:600">R$ ${(v.diaria||0).toFixed(2)}</td></tr>`).join('')}</tbody></table>
-  </div>`;
+  if(currentPerfil?.perfil==='investidor'){
+    // Vista completa para investidores
+    el.innerHTML=`
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent-color:var(--green)"><div class="stat-icon">💰</div><div class="stat-label">Receita estimada/mês</div><div class="stat-val" style="color:var(--green)">R$ ${calcReceitaMes()}</div><div class="stat-sub">baseado em locações ativas</div></div>
+        <div class="stat-card" style="--accent-color:var(--blue)"><div class="stat-icon">🚗</div><div class="stat-label">Total de veículos</div><div class="stat-val" style="color:var(--blue)">${allVeiculos.length}</div><div class="stat-sub">${allVeiculos.filter(v=>v.status==='disponivel').length} disponíveis</div></div>
+        <div class="stat-card" style="--accent-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-label">Locações ativas</div><div class="stat-val" style="color:var(--accent)">${allLocacoes.length}</div><div class="stat-sub">taxa de ocupação: ${calcOcupacao()}%</div></div>
+        <div class="stat-card" style="--accent-color:var(--purple)"><div class="stat-icon">👥</div><div class="stat-label">Base de clientes</div><div class="stat-val" style="color:var(--purple)">${allClientes.length}</div><div class="stat-sub">clientes cadastrados</div></div>
+      </div>
+      <div class="card"><div class="card-header"><span class="card-title">Relatório de frota</span></div>
+        <table><thead><tr><th>Veículo</th><th>Tipo</th><th>Status</th><th>Diária</th></tr></thead>
+        <tbody>${allVeiculos.map(v=>`<tr><td><div style="font-weight:500">${v.marca} ${v.modelo}</div><div style="font-size:11px;color:var(--muted)">${v.placa}</div></td><td>${v.tipo==='carro'?'🚗 Carro':'🏍️ Moto'}</td><td>${statusBadge(v.status)}</td><td style="color:var(--accent);font-weight:600">R$ ${(v.diaria||0).toFixed(2)}</td></tr>`).join('')}</tbody></table>
+      </div>`;
+  } else {
+    // Admin vê o painel + aviso de que investidores têm acesso limitado
+    el.innerHTML=`
+      <div style="margin-bottom:20px;padding:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:10px;font-size:13px;color:var(--purple)">
+        📊 Investidores com login próprio veem apenas esta área com as métricas abaixo.
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent-color:var(--green)"><div class="stat-icon">💰</div><div class="stat-label">Receita estimada/mês</div><div class="stat-val" style="color:var(--green)">R$ ${calcReceitaMes()}</div><div class="stat-sub">locações ativas</div></div>
+        <div class="stat-card" style="--accent-color:var(--blue)"><div class="stat-icon">🚗</div><div class="stat-label">Total de veículos</div><div class="stat-val" style="color:var(--blue)">${allVeiculos.length}</div></div>
+        <div class="stat-card" style="--accent-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-label">Locações ativas</div><div class="stat-val" style="color:var(--accent)">${allLocacoes.length}</div></div>
+        <div class="stat-card" style="--accent-color:var(--purple)"><div class="stat-icon">👥</div><div class="stat-label">Clientes</div><div class="stat-val" style="color:var(--purple)">${allClientes.length}</div></div>
+      </div>`;
+  }
 }
-function calcReceitaMes(){return allLocacoes.reduce((acc,l)=>{const dias=Math.min(30,Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000));return acc+(l.diaria||0)*dias;},0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
-function calcOcupacao(){if(!allVeiculos.length) return 0;return Math.round(allLocacoes.length/allVeiculos.length*100);}
+function calcReceitaMes(){
+  return allLocacoes.reduce((acc,l)=>{
+    const dias=Math.min(30,Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000));
+    return acc+(l.diaria||0)*dias;
+  },0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function calcOcupacao(){
+  if(!allVeiculos.length) return 0;
+  return Math.round(allLocacoes.length/allVeiculos.length*100);
+}
 
-// ══ MODAIS ══
+// ══ MODALS ══
 function openModal(type,subtipo){
   if(type==='veiculo'){
     document.getElementById('mv-title').textContent=subtipo==='moto'?'Cadastrar Moto':'Cadastrar Carro';
     if(subtipo) document.getElementById('mv-tipo').value=subtipo;
     document.getElementById('m-veiculo').classList.add('show');
-  }else if(type==='cliente'){
+  } else if(type==='cliente'){
     document.getElementById('m-cliente').classList.add('show');
-  }else if(type==='manutencao'){
+  } else if(type==='manutencao'){
     document.getElementById('mm-vei').innerHTML=allVeiculos.map(v=>`<option value="${v.id}">${v.marca} ${v.modelo} — ${v.placa}</option>`).join('');
     document.getElementById('mm-ini').value=new Date().toISOString().split('T')[0];
     document.getElementById('m-manutencao').classList.add('show');
   }
 }
 function closeModal(t){document.getElementById('m-'+t).classList.remove('show');}
-document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el) el.classList.remove('show');}));
+document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('show');}));
 
 // ══ UTILS ══
 function fmtData(d){return d?d.split('-').reverse().join('/'):'—';}
@@ -1402,27 +1947,42 @@ function notify(msg,type='success'){
 window.addEventListener('DOMContentLoaded',async()=>{
   const url=localStorage.getItem('fp_url');
   const key=localStorage.getItem('fp_key');
-  if(!url||!key){goLayer('setup');return;}
-  try{
-    sb=createClient(url,key);
-    const {data:{session},error}=await sb.auth.getSession();
+return;}
+
+  sb = createClient(url, key);
+
+  // Verifica sessão existente — evita pedir login toda vez
+  try {
+    const {data:{session}, error} = await sb.auth.getSession();
     if(error) throw error;
     if(session?.user){
       await carregarPerfil(session.user);
-    }else{
+    } else {
       goLayer('login');
     }
-    sb.auth.onAuthStateChange(async(event,session2)=>{
-      if(event==='SIGNED_IN'&&session2?.user) await carregarPerfil(session2.user);
-      if(event==='SIGNED_OUT') goLayer('login');
-    });
-  }catch(e){
-    localStorage.removeItem('fp_url');localStorage.removeItem('fp_key');
+  } catch(e) {
+    // Credenciais inválidas — limpa e mostra setup novamente
+    localStorage.removeItem('fp_url');
+    localStorage.removeItem('fp_key');
     goLayer('setup');
   }
-  // Preenche form WPP se já configurado
-  preencherWppForm();
+
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_IN' && session?.user) await carregarPerfil(session.user);
+    if(event==='SIGNED_OUT') goLayer('login');
+  });
+
+  // WhatsApp — reconecta se havia config salva
+  const wppSaved = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
+  if(wppSaved.apiUrl && wppSaved.apiKey){
+    wppConfig = wppSaved;
+    conectarWpp(wppSaved.apiUrl, wppSaved.apiKey, wppSaved.instancia);
+  }
+  renderWppPanel();
 });
+
+
+
 </script>
 </body>
 </html>
