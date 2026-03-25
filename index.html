@@ -436,9 +436,9 @@ insert into veiculos (tipo,marca,modelo,placa,ano,cor,cambio,km_atual,diaria,sta
   ('moto','Honda','Biz 125','JKL-5544',2021,'Vermelha','Manual',22000,60,'disponivel');
 
 insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
-  ('Ana Lima','123.456.789-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c5cac5e4c1c9c5cdc88ac7cbc9">[email&#160;protected]</a>','(21) 99999-1111','AB123456','2028-06-15'),
-  ('Carlos M.','987.654.321-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e4878596888b97a48189858d88ca878b89">[email&#160;protected]</a>','(21) 98888-2222','CD789012','2025-04-30'),
-  ('Fernanda T.','456.789.123-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b7b4a3bfb0bfb5b091b4bcb0b8bdffb2bebc">[email&#160;protected]</a>','(21) 97777-3333','EF345678','2027-11-20');</pre>
+  ('Ana Lima','123.456.789-00','ana@email.com','(21) 99999-1111','AB123456','2028-06-15'),
+  ('Carlos M.','987.654.321-00','carlos@email.com','(21) 98888-2222','CD789012','2025-04-30'),
+  ('Fernanda T.','456.789.123-00','fernanda@email.com','(21) 97777-3333','EF345678','2027-11-20');</pre>
     </div>
 
     <div style="margin-top:20px;">
@@ -810,7 +810,7 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
 
 <div class="notify" id="notify"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const {createClient} = supabase;
 let sb = null;
 let currentUser = null, currentPerfil = null;
@@ -1245,140 +1245,39 @@ async function calSelectDay(d){
   }).join('')||'<p style="color:var(--muted2)">Sem veículos.</p>';
 }
 
-// ══ CHAT — Evolution API Integration ══
-const EVO_URL  = 'https://evo.ruahsystems.com.br';
-const EVO_INST = 'royalevo';
-const EVO_KEY  = '65AAC74F7A54-40A1-A6B7-135DFF8C28C2';
-
-function fmtPhone(tel){
-  if(!tel) return null;
-  let n=tel.replace(/\D/g,'');
-  if(n.startsWith('0')) n=n.slice(1);
-  if(!n.startsWith('55')) n='55'+n;
-  return n+'@s.whatsapp.net';
-}
-
-async function evoSend(phone, text){
-  const num = phone.replace('@s.whatsapp.net','');
-  const res = await fetch(`${EVO_URL}/message/sendText/${EVO_INST}`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':EVO_KEY},
-    body:JSON.stringify({number:num, text})
-  });
-  return res.ok;
-}
-
-async function evoGetMsgs(phone){
-  try{
-    const num = phone.replace('@s.whatsapp.net','').replace('@c.us','');
-    const res = await fetch(`${EVO_URL}/chat/findMessages/${EVO_INST}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':EVO_KEY},
-      body:JSON.stringify({where:{key:{remoteJid:num+'@s.whatsapp.net'}},limit:50})
-    });
-    if(!res.ok) return [];
-    const data = await res.json();
-    const msgs = Array.isArray(data) ? data : (data.messages?.records || data.records || []);
-    return msgs.map(m=>({
-      text: m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.imageMessage?.caption || '📎 Mídia',
-      out: m.key?.fromMe === true,
-      time: new Date((m.messageTimestamp||0)*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
-      ts: m.messageTimestamp||0
-    })).sort((a,b)=>a.ts-b.ts);
-  }catch(e){ return []; }
-}
-
+// ══ CHAT ══
 function renderChatContacts(){
   document.getElementById('chat-contacts').innerHTML=allClientes.map(c=>{
     const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const last=(chatMsgs[c.id]||[]).slice(-1)[0]?.text||'Toque para carregar';
-    const temTel = !!c.telefone;
-    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')">
-      <div class="cavatar">${ini}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500">${c.nome}</div>
-        <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">${temTel?last:'<span style="color:var(--red)">Sem telefone</span>'}</div>
-      </div>
-      ${temTel?'<div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0"></div>':''}
-    </div>`;
+    const last=(chatMsgs[c.id]||[]).slice(-1)[0]?.text||'Nenhuma mensagem';
+    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')"><div class="cavatar">${ini}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">${c.nome}</div><div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">${last}</div></div></div>`;
   }).join('')||'<div style="padding:16px;font-size:12px;color:var(--muted)">Sem clientes</div>';
 }
-
-async function abrirChat(cid){
+function abrirChat(cid){
   activeChatId=cid;
   const c=allClientes.find(x=>x.id===cid);
   if(!c) return;
   const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   document.getElementById('chat-av').textContent=ini;
   document.getElementById('chat-name').textContent=c.nome;
-  document.getElementById('chat-info').textContent=c.telefone||'Sem telefone cadastrado';
+  document.getElementById('chat-info').textContent=c.telefone||'—';
+  renderChatMsgs(cid);renderChatContacts();
   goPage('chat');
-  renderChatContacts();
-
-  if(!c.telefone){
-    document.getElementById('chat-msgs').innerHTML='<div style="text-align:center;font-size:12px;color:var(--red);margin:20px 0">⚠️ Cliente sem telefone cadastrado</div>';
-    return;
-  }
-
-  // Mostra loading
-  document.getElementById('chat-msgs').innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Carregando mensagens...</div>';
-
-  const phone = fmtPhone(c.telefone);
-  const msgs = await evoGetMsgs(phone);
-  chatMsgs[cid] = msgs;
-  renderChatMsgs(cid);
 }
-
 function renderChatMsgs(cid){
   const msgs=chatMsgs[cid]||[];
   const area=document.getElementById('chat-msgs');
-  area.innerHTML=msgs.length
-    ? msgs.map(m=>`<div class="msg ${m.out?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>`).join('')
-    : '<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Nenhuma mensagem ainda</div>';
+  area.innerHTML=msgs.length?msgs.map(m=>`<div class="msg ${m.out?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>`).join(''):'<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Início da conversa</div>';
   area.scrollTop=area.scrollHeight;
 }
-
-async function sendMsg(){
+function sendMsg(){
   if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone){notify('Cliente sem telefone cadastrado','error');return;}
   const inp=document.getElementById('chat-msg-input');
-  const text=inp.value.trim();
-  if(!text) return;
-
-  inp.value='';
-  inp.disabled=true;
-
-  const phone=fmtPhone(c.telefone);
-  const ok=await evoSend(phone,text);
-
-  if(ok){
-    if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
-    chatMsgs[activeChatId].push({text,out:true,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),ts:Date.now()/1000});
-    renderChatMsgs(activeChatId);
-    renderChatContacts();
-    notify('Mensagem enviada!','success');
-  } else {
-    notify('Erro ao enviar mensagem','error');
-  }
-  inp.disabled=false;
-  inp.focus();
+  const text=inp.value.trim();if(!text) return;
+  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+  chatMsgs[activeChatId].push({text,out:true,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+  inp.value='';renderChatMsgs(activeChatId);renderChatContacts();
 }
-
-// Atualiza mensagens a cada 15s quando o chat está aberto
-setInterval(async()=>{
-  if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone) return;
-  const phone=fmtPhone(c.telefone);
-  const msgs=await evoGetMsgs(phone);
-  if(msgs.length !== (chatMsgs[activeChatId]||[]).length){
-    chatMsgs[activeChatId]=msgs;
-    renderChatMsgs(activeChatId);
-    renderChatContacts();
-  }
-},15000);
-
 function setMsg(t){document.getElementById('chat-msg-input').value=t;}
 
 // ══ USUÁRIOS (admin only) ══
@@ -1483,4 +1382,21 @@ function notify(msg,type='success'){
 window.addEventListener('DOMContentLoaded',async()=>{
   const url=localStorage.getItem('fp_url');
   const key=localStorage.getItem('fp_key');
-  if(!url||!key){goLayer('setup');
+  if(!url||!key){goLayer('setup');return;}
+  sb=createClient(url,key);
+  // Verificar sessão ativa
+  const {data:{session}}=await sb.auth.getSession();
+  if(session?.user){
+    await carregarPerfil(session.user);
+  } else {
+    goLayer('login');
+  }
+  // Listener de mudança de sessão
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_IN'&&session){await carregarPerfil(session.user);}
+    if(event==='SIGNED_OUT'){goLayer('login');}
+  });
+});
+</script>
+</body>
+</html>
