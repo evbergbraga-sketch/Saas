@@ -441,17 +441,32 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
   ('Fernanda T.','456.789.123-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbdddec9d5dad5dfdafbded6dad2d795d8d4d6">[email&#160;protected]</a>','(21) 97777-3333','EF345678','2027-11-20');</pre>
     </div>
 
-    <div style="margin-top:20px;">
-      <input class="setup-input" id="sb-url" placeholder="Project URL  (https://xxxx.supabase.co)">
-      <input class="setup-input" id="sb-key" placeholder="anon public key  (eyJh...)">
-      <div class="setup-err" id="setup-err"></div>
-      <div class="setup-ok"  id="setup-ok"></div>
-      <button class="setup-btn" onclick="setupConectar()">⚡ Conectar ao Supabase</button>
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px;">
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">📌 Project URL</label>
+        <input class="setup-input" id="sb-url" placeholder="https://xxxx.supabase.co" autocomplete="off" spellcheck="false" style="margin-bottom:0" oninput="this.style.borderColor=this.value.includes('supabase.co')?'var(--green)':'var(--border2)'">
+        <div style="font-size:11px;color:var(--muted2);margin-top:4px">Project Settings → API → <strong style="color:var(--text)">Project URL</strong></div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:5px;">🔑 Chave Anon (pública)</label>
+        <input class="setup-input" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." autocomplete="off" spellcheck="false" style="margin-bottom:0" oninput="this.style.borderColor=this.value.startsWith('eyJ')?'var(--green)':'var(--border2)'">
+        <div style="font-size:11px;color:var(--muted2);margin-top:4px">Project Settings → API → <strong style="color:var(--text)">anon public</strong> (começa com <code style="color:var(--accent);background:var(--bg);padding:1px 5px;border-radius:4px">eyJ</code>)</div>
+      </div>
+      <div id="setup-err" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--red);line-height:1.5"></div>
+      <div id="setup-ok"  style="display:none;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green)"></div>
+      <button class="setup-btn" id="setup-btn" onclick="setupConectar()">⚡ Conectar ao Supabase</button>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">✅ <strong style="color:var(--text)">URL correta:</strong><br><code style="color:var(--green);font-size:10px">https://abc123.supabase.co</code></div>
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">✅ <strong style="color:var(--text)">Chave correta:</strong><br><code style="color:var(--green);font-size:10px">eyJhbGci... (longa, começa com eyJ)</code></div>
+      </div>
     </div>
     <div style="text-align:center;margin-top:14px">
       <a href="https://supabase.com" target="_blank" style="font-size:12px;color:var(--blue)">Criar conta grátis no Supabase →</a>
+      <span style="color:var(--muted2);font-size:12px;margin:0 8px">·</span>
+      <span style="font-size:12px;color:var(--muted2);cursor:pointer" onclick="limparSetup()">Limpar dados salvos</span>
     </div>
   </div>
+</div>
 </div>
 
 <!-- ════════════════════════════════════════
@@ -873,25 +888,51 @@ function toggleSQL(){
 }
 function copySQL(){ navigator.clipboard.writeText(document.getElementById('sql-text').textContent); notify('SQL copiado!','success'); }
 
+function limparSetup(){
+  localStorage.removeItem('fp_url'); localStorage.removeItem('fp_key');
+  document.getElementById('sb-url').value='';
+  document.getElementById('sb-key').value='';
+  const e=document.getElementById('setup-err');
+  e.innerHTML='Dados limpos. Cole suas credenciais novamente.';
+  e.style.cssText='display:block;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--blue);line-height:1.5';
+}
+
 async function setupConectar(){
   const url=document.getElementById('sb-url').value.trim();
   const key=document.getElementById('sb-key').value.trim();
-  const err=document.getElementById('setup-err');
-  const ok=document.getElementById('setup-ok');
-  err.style.display='none'; ok.style.display='none';
-  if(!url||!key){err.textContent='Preencha os dois campos.';err.style.display='block';return;}
+  const errEl=document.getElementById('setup-err');
+  const okEl=document.getElementById('setup-ok');
+  const btn=document.getElementById('setup-btn');
+  const showErr=(msg)=>{
+    errEl.innerHTML=msg;
+    errEl.style.cssText='display:block;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--red);line-height:1.5;margin-top:0';
+    okEl.style.display='none';
+  };
+  errEl.style.display='none'; okEl.style.display='none';
+
+  if(!url && !key){ showErr('⚠️ Preencha os dois campos acima: <strong>Project URL</strong> e <strong>chave anon public</strong>.'); return; }
+  if(!url){ showErr('⚠️ A <strong>Project URL</strong> está vazia. Formato: <code style="color:var(--accent)">https://xxxx.supabase.co</code>'); return; }
+  if(!url.includes('supabase.co')){ showErr('⚠️ A URL parece incorreta. Deve terminar com <code style="color:var(--accent)">.supabase.co</code>'); return; }
+  if(!key){ showErr('⚠️ A <strong>chave anon public</strong> está vazia. Deve começar com <code style="color:var(--accent)">eyJ</code>'); return; }
+  if(!key.startsWith('eyJ')){ showErr('⚠️ Chave inválida — você colou a chave errada.<br><span style="color:var(--muted)">Use a <strong>anon public</strong>, que começa com <code style="color:var(--accent)">eyJ</code>. Não use a service_role.</span>'); return; }
+
+  btn.textContent='⏳ Conectando...'; btn.disabled=true;
   try{
     sb=createClient(url,key);
-    const {error}=await sb.from('veiculos').select('id').limit(1);
+    const {error}=await sb.auth.getSession();
     if(error) throw error;
     localStorage.setItem('fp_url',url);
     localStorage.setItem('fp_key',key);
-    ok.textContent='✓ Conexão bem-sucedida! Redirecionando...';
-    ok.style.display='block';
-    setTimeout(()=>goLayer('login'),800);
+    okEl.innerHTML='✅ Conectado! Redirecionando...';
+    okEl.style.cssText='display:block;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--green)';
+    btn.textContent='✓ Conectado!';
+    setTimeout(()=>goLayer('login'),900);
   }catch(e){
-    err.textContent='❌ Erro: '+(e.message||'Verifique URL, chave e se as tabelas foram criadas.');
-    err.style.display='block';
+    btn.textContent='⚡ Conectar ao Supabase'; btn.disabled=false;
+    let msg=e.message||'Erro desconhecido';
+    if(msg.includes('Invalid API key')||msg.includes('apikey')) msg='Chave inválida. Verifique se copiou a <strong>anon public</strong> correta.';
+    else if(msg.includes('fetch')||msg.includes('network')) msg='Não foi possível alcançar o Supabase. Verifique a URL.';
+    showErr('❌ '+msg+'<br><span style="color:var(--muted);display:block;margin-top:4px">Se ainda não criou as tabelas, use o SQL acima no SQL Editor do Supabase primeiro.</span>');
   }
 }
 
