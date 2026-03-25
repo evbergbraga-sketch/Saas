@@ -436,9 +436,9 @@ insert into veiculos (tipo,marca,modelo,placa,ano,cor,cambio,km_atual,diaria,sta
   ('moto','Honda','Biz 125','JKL-5544',2021,'Vermelha','Manual',22000,60,'disponivel');
 
 insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
-  ('Ana Lima','123.456.789-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4c5cac5e4c1c9c5cdc88ac7cbc9">[email&#160;protected]</a>','(21) 99999-1111','AB123456','2028-06-15'),
-  ('Carlos M.','987.654.321-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e4878596888b97a48189858d88ca878b89">[email&#160;protected]</a>','(21) 98888-2222','CD789012','2025-04-30'),
-  ('Fernanda T.','456.789.123-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d1b7b4a3bfb0bfb5b091b4bcb0b8bdffb2bebc">[email&#160;protected]</a>','(21) 97777-3333','EF345678','2027-11-20');</pre>
+  ('Ana Lima','123.456.789-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="25444b44654048444c490b464a48">[email&#160;protected]</a>','(21) 99999-1111','AB123456','2028-06-15'),
+  ('Carlos M.','987.654.321-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="016260736d6e7241646c60686d2f626e6c">[email&#160;protected]</a>','(21) 98888-2222','CD789012','2025-04-30'),
+  ('Fernanda T.','456.789.123-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bbdddec9d5dad5dfdafbded6dad2d795d8d4d6">[email&#160;protected]</a>','(21) 97777-3333','EF345678','2027-11-20');</pre>
     </div>
 
     <div style="margin-top:20px;">
@@ -1058,12 +1058,14 @@ function renderDashboard(){
 // ══ VEÍCULOS ══
 function statusBadge(s){return s==='disponivel'?'<span class="badge badge-green">Disponível</span>':s==='alugado'?'<span class="badge badge-red">Alugado</span>':'<span class="badge badge-yellow">Manutenção</span>';}
 function renderVeiculos(){
-  ['carro','moto'].forEach(tipo=>{
-    const suf=tipo==='carro'?'s':'s';
-    const search=(document.getElementById(`s-${tipo}${suf}`)?.value||'').toLowerCase();
-    const sf=document.getElementById(`f-${tipo}${suf}`)?.value||'';
+  // carro -> ids: s-carros, f-carros, tb-carros
+  // moto  -> ids: s-motos,  f-motos,  tb-motos
+  const map={carro:'carros', moto:'motos'};
+  Object.entries(map).forEach(([tipo,key])=>{
+    const search=(document.getElementById(`s-${key}`)?.value||'').toLowerCase();
+    const sf=document.getElementById(`f-${key}`)?.value||'';
     const data=allVeiculos.filter(v=>v.tipo===tipo&&(!sf||v.status===sf)&&(!search||`${v.marca} ${v.modelo} ${v.placa}`.toLowerCase().includes(search)));
-    const tb=document.getElementById(`tb-${tipo}${suf}`);
+    const tb=document.getElementById(`tb-${key}`);
     if(!tb) return;
     const canEdit=['admin','atendente'].includes(currentPerfil?.perfil);
     tb.innerHTML=data.length?data.map(v=>`
@@ -1245,140 +1247,39 @@ async function calSelectDay(d){
   }).join('')||'<p style="color:var(--muted2)">Sem veículos.</p>';
 }
 
-// ══ CHAT — Evolution API Integration ══
-const EVO_URL  = 'https://evo.ruahsystems.com.br';
-const EVO_INST = 'royalevo';
-const EVO_KEY  = '65AAC74F7A54-40A1-A6B7-135DFF8C28C2';
-
-function fmtPhone(tel){
-  if(!tel) return null;
-  let n=tel.replace(/\D/g,'');
-  if(n.startsWith('0')) n=n.slice(1);
-  if(!n.startsWith('55')) n='55'+n;
-  return n+'@s.whatsapp.net';
-}
-
-async function evoSend(phone, text){
-  const num = phone.replace('@s.whatsapp.net','');
-  const res = await fetch(`${EVO_URL}/message/sendText/${EVO_INST}`,{
-    method:'POST',
-    headers:{'Content-Type':'application/json','apikey':EVO_KEY},
-    body:JSON.stringify({number:num, text})
-  });
-  return res.ok;
-}
-
-async function evoGetMsgs(phone){
-  try{
-    const num = phone.replace('@s.whatsapp.net','').replace('@c.us','');
-    const res = await fetch(`${EVO_URL}/chat/findMessages/${EVO_INST}`,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':EVO_KEY},
-      body:JSON.stringify({where:{key:{remoteJid:num+'@s.whatsapp.net'}},limit:50})
-    });
-    if(!res.ok) return [];
-    const data = await res.json();
-    const msgs = Array.isArray(data) ? data : (data.messages?.records || data.records || []);
-    return msgs.map(m=>({
-      text: m.message?.conversation || m.message?.extendedTextMessage?.text || m.message?.imageMessage?.caption || '📎 Mídia',
-      out: m.key?.fromMe === true,
-      time: new Date((m.messageTimestamp||0)*1000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),
-      ts: m.messageTimestamp||0
-    })).sort((a,b)=>a.ts-b.ts);
-  }catch(e){ return []; }
-}
-
+// ══ CHAT ══
 function renderChatContacts(){
   document.getElementById('chat-contacts').innerHTML=allClientes.map(c=>{
     const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const last=(chatMsgs[c.id]||[]).slice(-1)[0]?.text||'Toque para carregar';
-    const temTel = !!c.telefone;
-    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')">
-      <div class="cavatar">${ini}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:500">${c.nome}</div>
-        <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">${temTel?last:'<span style="color:var(--red)">Sem telefone</span>'}</div>
-      </div>
-      ${temTel?'<div style="width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0"></div>':''}
-    </div>`;
+    const last=(chatMsgs[c.id]||[]).slice(-1)[0]?.text||'Nenhuma mensagem';
+    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')"><div class="cavatar">${ini}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">${c.nome}</div><div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">${last}</div></div></div>`;
   }).join('')||'<div style="padding:16px;font-size:12px;color:var(--muted)">Sem clientes</div>';
 }
-
-async function abrirChat(cid){
+function abrirChat(cid){
   activeChatId=cid;
   const c=allClientes.find(x=>x.id===cid);
   if(!c) return;
   const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   document.getElementById('chat-av').textContent=ini;
   document.getElementById('chat-name').textContent=c.nome;
-  document.getElementById('chat-info').textContent=c.telefone||'Sem telefone cadastrado';
+  document.getElementById('chat-info').textContent=c.telefone||'—';
+  renderChatMsgs(cid);renderChatContacts();
   goPage('chat');
-  renderChatContacts();
-
-  if(!c.telefone){
-    document.getElementById('chat-msgs').innerHTML='<div style="text-align:center;font-size:12px;color:var(--red);margin:20px 0">⚠️ Cliente sem telefone cadastrado</div>';
-    return;
-  }
-
-  // Mostra loading
-  document.getElementById('chat-msgs').innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Carregando mensagens...</div>';
-
-  const phone = fmtPhone(c.telefone);
-  const msgs = await evoGetMsgs(phone);
-  chatMsgs[cid] = msgs;
-  renderChatMsgs(cid);
 }
-
 function renderChatMsgs(cid){
   const msgs=chatMsgs[cid]||[];
   const area=document.getElementById('chat-msgs');
-  area.innerHTML=msgs.length
-    ? msgs.map(m=>`<div class="msg ${m.out?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>`).join('')
-    : '<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Nenhuma mensagem ainda</div>';
+  area.innerHTML=msgs.length?msgs.map(m=>`<div class="msg ${m.out?'msg-out':'msg-in'}">${m.text}<div class="msg-time">${m.time}</div></div>`).join(''):'<div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Início da conversa</div>';
   area.scrollTop=area.scrollHeight;
 }
-
-async function sendMsg(){
+function sendMsg(){
   if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone){notify('Cliente sem telefone cadastrado','error');return;}
   const inp=document.getElementById('chat-msg-input');
-  const text=inp.value.trim();
-  if(!text) return;
-
-  inp.value='';
-  inp.disabled=true;
-
-  const phone=fmtPhone(c.telefone);
-  const ok=await evoSend(phone,text);
-
-  if(ok){
-    if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
-    chatMsgs[activeChatId].push({text,out:true,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),ts:Date.now()/1000});
-    renderChatMsgs(activeChatId);
-    renderChatContacts();
-    notify('Mensagem enviada!','success');
-  } else {
-    notify('Erro ao enviar mensagem','error');
-  }
-  inp.disabled=false;
-  inp.focus();
+  const text=inp.value.trim();if(!text) return;
+  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+  chatMsgs[activeChatId].push({text,out:true,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+  inp.value='';renderChatMsgs(activeChatId);renderChatContacts();
 }
-
-// Atualiza mensagens a cada 15s quando o chat está aberto
-setInterval(async()=>{
-  if(!activeChatId) return;
-  const c=allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone) return;
-  const phone=fmtPhone(c.telefone);
-  const msgs=await evoGetMsgs(phone);
-  if(msgs.length !== (chatMsgs[activeChatId]||[]).length){
-    chatMsgs[activeChatId]=msgs;
-    renderChatMsgs(activeChatId);
-    renderChatContacts();
-  }
-},15000);
-
 function setMsg(t){document.getElementById('chat-msg-input').value=t;}
 
 // ══ USUÁRIOS (admin only) ══
@@ -1483,4 +1384,156 @@ function notify(msg,type='success'){
 window.addEventListener('DOMContentLoaded',async()=>{
   const url=localStorage.getItem('fp_url');
   const key=localStorage.getItem('fp_key');
-  if(!url||!key){goLayer('setup');
+return;}
+
+  sb = createClient(url, key);
+
+  // Verifica sessão existente — evita pedir login toda vez
+  try {
+    const {data:{session}, error} = await sb.auth.getSession();
+    if(error) throw error;
+    if(session?.user){
+      await carregarPerfil(session.user);
+    } else {
+      goLayer('login');
+    }
+  } catch(e) {
+    // Credenciais inválidas — limpa e mostra setup novamente
+    localStorage.removeItem('fp_url');
+    localStorage.removeItem('fp_key');
+    goLayer('setup');
+  }
+
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_IN' && session?.user) await carregarPerfil(session.user);
+    if(event==='SIGNED_OUT') goLayer('login');
+  });
+
+  // WhatsApp — reconecta se havia config salva
+  const wppSaved = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
+  if(wppSaved.apiUrl && wppSaved.apiKey){
+    wppConfig = wppSaved;
+    conectarWpp(wppSaved.apiUrl, wppSaved.apiKey, wppSaved.instancia);
+  }
+  renderWppPanel();
+});
+
+// ════════════════════════════════════════
+// WHATSAPP (Evolution API / Z-API)
+// ════════════════════════════════════════
+let wppConfig = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
+let wppConnected = false;
+
+function renderWppPanel(){
+  document.querySelectorAll('.wpp-ok').forEach(el=>{
+    el.innerHTML = wppConnected
+      ? '<div class="wdot"></div>WhatsApp conectado'
+      : '<div class="wdot" style="background:var(--muted2)"></div><span style="color:var(--muted)">Modo local (sem API)</span>';
+  });
+}
+
+async function conectarWpp(apiUrl, apiKey, instancia){
+  try{
+    const r = await fetch(`${apiUrl}/instance/fetchInstances`,{
+      headers:{'apikey':apiKey,'Content-Type':'application/json'}
+    });
+    if(!r.ok) throw new Error('Resposta inválida da API');
+    wppConfig={apiUrl,apiKey,instancia};
+    localStorage.setItem('fp_wpp',JSON.stringify(wppConfig));
+    wppConnected=true;
+    notify('WhatsApp conectado com sucesso!','success');
+    renderWppPanel();
+  }catch(e){
+    wppConnected=false;
+    notify('WhatsApp (modo local): '+e.message,'error');
+    renderWppPanel();
+  }
+}
+
+async function enviarMsgWpp(numero, texto){
+  if(!wppConnected) return false;
+  const num='55'+numero.replace(/\D/g,'');
+  try{
+    const r=await fetch(`${wppConfig.apiUrl}/message/sendText/${wppConfig.instancia}`,{
+      method:'POST',
+      headers:{'apikey':wppConfig.apiKey,'Content-Type':'application/json'},
+      body:JSON.stringify({number:num,text:texto})
+    });
+    return r.ok;
+  }catch(){ return false; }
+}
+
+// sendMsg com integração WhatsApp real
+async function sendMsg(){
+  if(!activeChatId) return;
+  const inp=document.getElementById('chat-msg-input');
+  const text=inp.value.trim();
+  if(!text) return;
+  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+  chatMsgs[activeChatId].push({
+    text, out:true,
+    time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+  });
+  inp.value='';
+  renderChatMsgs(activeChatId);
+  renderChatContacts();
+  // Envia pelo WhatsApp real se conectado
+  const cliente=allClientes.find(c=>c.id===activeChatId);
+  if(cliente?.telefone){
+    const ok=await enviarMsgWpp(cliente.telefone,text);
+    if(ok) notify('✓ Enviado pelo WhatsApp','success');
+  }
+}
+
+function setMsg(t){ document.getElementById('chat-msg-input').value=t; }
+
+// Injeta painel de config WPP no sidebar do chat
+function injetarWppConfig(){
+  const side=document.querySelector('.chat-side');
+  if(!side||document.getElementById('wpp-cfg-sec')) return;
+  const sec=document.createElement('div');
+  sec.id='wpp-cfg-sec';
+  sec.style.marginTop='16px';
+  sec.innerHTML=`
+    <div class="cst" style="margin-top:4px">Conexão WhatsApp</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">
+      Conecte a <a href="https://github.com/EvolutionAPI/evolution-api" target="_blank" style="color:var(--blue)">Evolution API</a> (gratuita) ou
+      <a href="https://www.z-api.io" target="_blank" style="color:var(--blue)">Z-API</a> para envio real.
+    </div>
+    <div class="form-group" style="margin-bottom:8px">
+      <label>URL da API</label>
+      <input type="text" id="wpp-url" placeholder="https://api.seuservidor.com" value="${wppConfig.apiUrl||''}" style="width:100%;font-size:12px">
+    </div>
+    <div class="form-group" style="margin-bottom:8px">
+      <label>API Key</label>
+      <input type="text" id="wpp-key" placeholder="sua-chave-secreta" value="${wppConfig.apiKey||''}" style="width:100%;font-size:12px">
+    </div>
+    <div class="form-group" style="margin-bottom:10px">
+      <label>Nome da instância</label>
+      <input type="text" id="wpp-inst" placeholder="fleetpro" value="${wppConfig.instancia||'fleetpro'}" style="width:100%;font-size:12px">
+    </div>
+    <button class="btn btn-primary" style="width:100%;font-size:12px;margin-bottom:8px" onclick="salvarConexaoWpp()">⚡ Conectar WhatsApp</button>
+    <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.5">
+      <strong style="color:var(--text)">Sem API agora?</strong> Tudo bem — as mensagens ficam salvas no sistema. Configure depois para envio automático.
+    </div>`;
+  side.appendChild(sec);
+}
+
+function salvarConexaoWpp(){
+  const url=document.getElementById('wpp-url')?.value.trim();
+  const key=document.getElementById('wpp-key')?.value.trim();
+  const inst=document.getElementById('wpp-inst')?.value.trim()||'fleetpro';
+  if(!url||!key){notify('Preencha URL e API Key','error');return;}
+  conectarWpp(url,key,inst);
+}
+
+// Hook: injeta config WPP quando abrir chat
+const _goPageOriginal = goPage;
+function goPage(id, navEl){
+  _goPageOriginal(id, navEl);
+  if(id==='chat') setTimeout(injetarWppConfig, 100);
+}
+
+</script>
+</body>
+</html>
