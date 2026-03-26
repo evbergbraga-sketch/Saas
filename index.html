@@ -1344,25 +1344,50 @@ function conectarSSE(bridgeUrl, secret){
 }
 
 function receberMsgSSE(msg){
-  const cid = msg.clienteId || encontrarClientePorNumero(msg.numero);
-  const msgObj = { texto: msg.texto, tipo: msg.tipoMsg||'text', direcao:'entrada',
-    media_url: msg.mediaUrl||null, created_at: msg.createdAt||new Date().toISOString() };
-  if(!chatMsgs[cid]) chatMsgs[cid]=[];
-  chatMsgs[cid].push(msgObj);
-  // Injeta diretamente no DOM se a conversa estiver aberta (sem ir ao banco)
-  if(activeChatId===cid){
+  console.log('[SSE] Mensagem chegou:', JSON.stringify(msg));
+  // Encontra o cliente pelo ID ou pelo número
+  const cidPorId     = msg.clienteId||null;
+  const cidPorNumero = encontrarClientePorNumero(msg.numero);
+  const cid          = cidPorId || cidPorNumero || msg.numero;
+
+  const msgObj = {
+    texto:      msg.texto||'',
+    tipo:       msg.tipoMsg||'text',
+    direcao:    'entrada',
+    media_url:  msg.mediaUrl||null,
+    created_at: msg.createdAt||new Date().toISOString()
+  };
+
+  // Guarda em memória em TODOS os identificadores possíveis
+  [cid, cidPorId, cidPorNumero, msg.numero].filter(Boolean).forEach(k=>{
+    if(!chatMsgs[k]) chatMsgs[k]=[];
+    // Evita duplicatas
+    const jatem = chatMsgs[k].some(m=>m.created_at===msgObj.created_at && m.texto===msgObj.texto);
+    if(!jatem) chatMsgs[k].push(msgObj);
+  });
+
+  // Injeta no DOM se a conversa estiver aberta
+  const estaAberta = activeChatId && [cid, cidPorId, cidPorNumero, msg.numero]
+    .filter(Boolean).includes(activeChatId);
+  if(estaAberta){
     const area = document.getElementById('chat-msgs');
-    const ph = area.querySelector('[data-placeholder]');
-    if(ph) ph.remove();
-    area.insertAdjacentHTML('beforeend', renderMsgItem(msgObj));
-    area.scrollTop = area.scrollHeight;
+    if(area){
+      const ph = area.querySelector('[data-placeholder]');
+      if(ph) ph.remove();
+      area.insertAdjacentHTML('beforeend', renderMsgItem(msgObj));
+      area.scrollTop = area.scrollHeight;
+    }
   }
+
+  // Atualiza lista de contatos
   renderChatContacts();
-  const nome = msg.nomeCliente||msg.numero;
-  const prev = msg.texto ? msg.texto.slice(0,35) : '(mídia)';
+
+  // Notificação
+  const nome = msg.nomeCliente||msg.numero||'Desconhecido';
+  const prev = msg.texto ? msg.texto.slice(0,40) : '(mídia)';
   notify('💬 '+nome+': '+prev,'success');
-  document.title='(!) FleetPro — Nova msg de '+nome;
-  setTimeout(()=>document.title='FleetPro — Sistema de Locadora',5000);
+  document.title='(!) FleetPro — '+nome;
+  setTimeout(()=>document.title='FleetPro — Sistema de Locadora',8000);
 }
 
 function encontrarClientePorNumero(numero){
