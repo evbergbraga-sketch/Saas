@@ -1344,13 +1344,19 @@ function conectarSSE(bridgeUrl, secret){
 }
 
 function receberMsgSSE(msg){
-  // msg = { numero, clienteId, nomeCliente, texto, tipoMsg, mediaUrl, createdAt }
   const cid = msg.clienteId || encontrarClientePorNumero(msg.numero);
   const msgObj = { texto: msg.texto, tipo: msg.tipoMsg||'text', direcao:'entrada',
     media_url: msg.mediaUrl||null, created_at: msg.createdAt||new Date().toISOString() };
   if(!chatMsgs[cid]) chatMsgs[cid]=[];
   chatMsgs[cid].push(msgObj);
-  if(activeChatId===cid) renderChatMsgs(cid);
+  // Injeta diretamente no DOM se a conversa estiver aberta (sem ir ao banco)
+  if(activeChatId===cid){
+    const area = document.getElementById('chat-msgs');
+    const ph = area.querySelector('[data-placeholder]');
+    if(ph) ph.remove();
+    area.insertAdjacentHTML('beforeend', renderMsgItem(msgObj));
+    area.scrollTop = area.scrollHeight;
+  }
   renderChatContacts();
   const nome = msg.nomeCliente||msg.numero;
   const prev = msg.texto ? msg.texto.slice(0,35) : '(mídia)';
@@ -1413,29 +1419,29 @@ function preencherCamposWpp(){
 // ── CARREGAR MENSAGENS DO SUPABASE ──
 async function carregarMsgsDB(clienteId){
   if(!sb) return [];
-  // Busca por cliente_id
+  // Busca por cliente_id vinculado
   const {data:byId} = await sb.from('wpp_mensagens')
     .select('*').eq('cliente_id',clienteId)
     .order('created_at',{ascending:true}).limit(200);
 
-  // Busca por número (para mensagens com cliente_id NULL)
+  // Busca por número (captura msgs com cliente_id NULL)
   const cliente = allClientes.find(c=>c.id===clienteId);
   let byNumero = [];
   if(cliente?.telefone){
     const numLimpo = cliente.telefone.replace(/\D/g,'').slice(-11);
     const {data:d} = await sb.from('wpp_mensagens')
       .select('*').ilike('numero','%'+numLimpo+'%')
-      .is('cliente_id',null)
       .order('created_at',{ascending:true}).limit(200);
-    byNumero = d||[];
-    // Vincula cliente_id nas mensagens órfãs em background
-    if(byNumero.length>0){
-      const ids = byNumero.map(m=>m.id);
-      sb.from('wpp_mensagens').update({cliente_id:clienteId}).in('id',ids).then(()=>{});
+    // Filtra só as que não têm cliente_id (NULL ou diferente)
+    byNumero = (d||[]).filter(m=>!m.cliente_id || m.cliente_id!==clienteId);
+    // Vincula em background
+    const semCliente = byNumero.filter(m=>!m.cliente_id).map(m=>m.id);
+    if(semCliente.length>0){
+      sb.from('wpp_mensagens').update({cliente_id:clienteId}).in('id',semCliente).then(()=>{});
     }
   }
 
-  // Merge e deduplica
+  // Merge e deduplica por id
   const vistos = new Set();
   return [...(byId||[]),...byNumero]
     .filter(m=>{ if(vistos.has(m.id)) return false; vistos.add(m.id); return true; })
@@ -1488,12 +1494,17 @@ async function renderChatMsgs(cid){
   const area = document.getElementById('chat-msgs');
   area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:20px">⏳ Carregando...</div>';
   const dbMsgs = await carregarMsgsDB(cid);
-  // Merge com mensagens locais pendentes
-  const locais = (chatMsgs[cid]||[]).filter(m=>m._local);
-  const todas = [...dbMsgs,...locais].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
-  area.innerHTML = todas.length
-    ? todas.map(renderMsgItem).join('')
-    : '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda.</div>';
+  // Mensagens SSE/locais em memória (todas, não só _local)
+  const memMsgs = (chatMsgs[cid]||[]);
+  // Merge: banco + memória, deduplicando por created_at+texto
+  const visto = new Set(dbMsgs.map(m=>m.created_at+'|'+(m.texto||'')));
+  const extras = memMsgs.filter(m=>!visto.has((m.created_at||'')+'|'+(m.texto||m.text||'')));
+  const todas = [...dbMsgs,...extras].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+  if(todas.length){
+    area.innerHTML = todas.map(renderMsgItem).join('');
+  } else {
+    area.innerHTML = '<div data-placeholder style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda.</div>';
+  }
   area.scrollTop = area.scrollHeight;
 }
 
