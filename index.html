@@ -1120,13 +1120,43 @@ function renderVeiculos(){
 }
 
 async function salvarVeiculo(){
-  const obj={tipo:document.getElementById('mv-tipo').value,marca:document.getElementById('mv-marca').value.trim(),modelo:document.getElementById('mv-modelo').value.trim(),placa:document.getElementById('mv-placa').value.trim().toUpperCase(),ano:parseInt(document.getElementById('mv-ano').value)||null,cor:document.getElementById('mv-cor').value.trim(),cambio:document.getElementById('mv-cambio').value,km_atual:parseInt(document.getElementById('mv-km').value)||0,diaria:parseFloat(document.getElementById('mv-diaria').value)||0,observacoes:document.getElementById('mv-obs').value};
-  if(!obj.marca||!obj.modelo||!obj.placa||!obj.diaria){notify('Preencha os campos obrigatórios','error');return;}
-  const {error}=await sb.from('veiculos').insert(obj);
-  if(error){notify('Erro: '+error.message,'error');return;}
-  notify('Veículo cadastrado!','success');
-  closeModal('veiculo');
-  await loadVeiculos();renderDashboard();
+  const tipo   = document.getElementById('mv-tipo').value;
+  const marca  = document.getElementById('mv-marca').value.trim();
+  const modelo = document.getElementById('mv-modelo').value.trim();
+  const placa  = document.getElementById('mv-placa').value.trim().toUpperCase();
+  const ano    = parseInt(document.getElementById('mv-ano').value)||null;
+  const cor    = document.getElementById('mv-cor').value.trim();
+  const cambio = document.getElementById('mv-cambio').value;
+  const km     = parseInt(document.getElementById('mv-km').value)||0;
+  const diaria = parseFloat(document.getElementById('mv-diaria').value)||0;
+  const obs    = document.getElementById('mv-obs').value.trim();
+
+  if(!marca||!modelo||!placa){notify('Marca, modelo e placa são obrigatórios','error');return;}
+  if(!diaria){notify('Informe o valor da diária','error');return;}
+
+  const btn = document.querySelector('#m-veiculo .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+
+  try{
+    const {data,error}=await sb.from('veiculos').insert({
+      tipo,marca,modelo,placa,ano,cor,cambio,km_atual:km,diaria,observacoes:obs
+    }).select().single();
+
+    if(error) throw error;
+
+    notify('Veículo cadastrado com sucesso!','success');
+    closeModal('veiculo');
+    ['mv-marca','mv-modelo','mv-placa','mv-ano','mv-cor','mv-km','mv-diaria','mv-obs'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
+    await loadVeiculos();
+    renderDashboard();
+  }catch(e){
+    console.error('salvarVeiculo erro:', e);
+    notify('Erro ao salvar: '+e.message,'error');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✓ Salvar';}
+  }
 }
 
 // ══ CLIENTES ══
@@ -1145,13 +1175,43 @@ function renderClientes(){
 }
 
 async function salvarCliente(){
-  const obj={nome:document.getElementById('mc-nome').value.trim(),cpf:document.getElementById('mc-cpf').value.trim(),email:document.getElementById('mc-email').value.trim(),telefone:document.getElementById('mc-tel').value.trim(),cnh:document.getElementById('mc-cnh').value.trim(),cnh_validade:document.getElementById('mc-cnh-val').value||null,endereco:document.getElementById('mc-end').value.trim(),observacoes:document.getElementById('mc-obs').value};
-  if(!obj.nome||!obj.cpf){notify('Nome e CPF obrigatórios','error');return;}
-  const {error}=await sb.from('clientes').insert(obj);
-  if(error){notify('Erro: '+error.message,'error');return;}
-  notify('Cliente cadastrado!','success');
-  closeModal('cliente');
-  await loadClientes();renderDashboard();
+  const nome = document.getElementById('mc-nome').value.trim();
+  const cpf  = document.getElementById('mc-cpf').value.trim();
+  const tel  = document.getElementById('mc-tel').value.trim();
+  const email= document.getElementById('mc-email').value.trim();
+  const cnh  = document.getElementById('mc-cnh').value.trim();
+  const cnhv = document.getElementById('mc-cnh-val').value||null;
+  const end  = document.getElementById('mc-end').value.trim();
+  const obs  = document.getElementById('mc-obs').value.trim();
+
+  if(!nome||!cpf){notify('Nome e CPF são obrigatórios','error');return;}
+
+  // Desabilita botão durante salvamento
+  const btn = document.querySelector('#m-cliente .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+
+  try{
+    const {data,error}=await sb.from('clientes').insert({
+      nome,cpf,email,telefone:tel,cnh,cnh_validade:cnhv,endereco:end,observacoes:obs
+    }).select().single();
+
+    if(error) throw error;
+
+    notify('Cliente cadastrado com sucesso!','success');
+    closeModal('cliente');
+    // Limpa os campos
+    ['mc-nome','mc-cpf','mc-tel','mc-email','mc-cnh','mc-end'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
+    document.getElementById('mc-obs').value='';
+    await loadClientes();
+    renderDashboard();
+  }catch(e){
+    console.error('salvarCliente erro:', e);
+    notify('Erro ao salvar: '+e.message,'error');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✓ Salvar';}
+  }
 }
 
 // ══ HISTÓRICO ══
@@ -1535,7 +1595,22 @@ async function renderChatMsgs(cid){
 
 function renderChatContacts(){
   const s = (document.getElementById('chat-search')?.value||'').toLowerCase();
-  const clientes = allClientes.filter(c=>!s||c.nome.toLowerCase().includes(s)||(c.telefone||'').includes(s));
+
+  // Coleta números desconhecidos que mandaram mensagem mas não são clientes
+  const numsCadastrados = new Set(allClientes.map(c=>(c.telefone||'').replace(/\D/g,'').slice(-11)));
+  const desconhecidos = [];
+  Object.keys(chatMsgs).forEach(k=>{
+    // k pode ser uuid de cliente ou número
+    const isUuid = k.includes('-');
+    if(!isUuid){
+      const num = k.replace(/\D/g,'').slice(-11);
+      if(!numsCadastrados.has(num) && chatMsgs[k]?.length > 0){
+        desconhecidos.push({id:k, nome:'Desconhecido ('+k+')', telefone:k, _desconhecido:true});
+      }
+    }
+  });
+
+  const clientes = [...allClientes, ...desconhecidos].filter(c=>!s||c.nome.toLowerCase().includes(s)||(c.telefone||'').includes(s));
   document.getElementById('chat-contacts').innerHTML = clientes.map(c=>{
     const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const lastLocal = (chatMsgs[c.id]||[]).slice(-1)[0];
@@ -1555,7 +1630,23 @@ function filtrarContatos(){ renderChatContacts(); }
 function abrirChat(cid){
   activeChatId = cid;
   const c = allClientes.find(x=>x.id===cid);
-  if(!c) return;
+
+  // Número desconhecido — não é cliente cadastrado
+  if(!c){
+    document.getElementById('chat-av').textContent = '?';
+    document.getElementById('chat-av').style.background = 'rgba(139,139,139,0.2)';
+    document.getElementById('chat-av').style.color = 'var(--muted)';
+    document.getElementById('chat-name').textContent = 'Desconhecido';
+    document.getElementById('chat-info').textContent = cid + ' · Clique em Perfil para cadastrar';
+    const area = document.getElementById('chat-msgs');
+    const msgs = chatMsgs[cid]||[];
+    area.innerHTML = msgs.length
+      ? msgs.map(renderMsgItem).join('')
+      : '<div data-placeholder style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens.</div>';
+    area.scrollTop = area.scrollHeight;
+    renderChatContacts();
+    return;
+  }
   const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   document.getElementById('chat-av').textContent = ini;
   document.getElementById('chat-name').textContent = c.nome;
