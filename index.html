@@ -116,7 +116,7 @@ nav{flex:1;padding:14px 10px;overflow-y:auto;}
 .btn-primary:hover{background:var(--accent2);}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2);}
 .btn-ghost:hover{color:var(--text);background:var(--bg3);}
-.content{flex:1;overflow-y:auto;padding:28px;}
+.content{flex:1;overflow-y:auto;padding:28px;min-height:0;}
 
 /* ══ PAGES ══ */
 .page{display:none;}
@@ -699,8 +699,8 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
       </div>
 
       <!-- CHAT -->
-      <div class="page" id="page-chat">
-        <div class="chat-layout">
+      <div class="page" id="page-chat" style="height:calc(100vh - 130px);overflow:hidden;">
+        <div class="chat-layout" style="height:100%;">
           <div class="chat-list">
             <div class="chat-list-hdr">💬 WhatsApp<div style="font-size:11px;font-weight:400;color:var(--green);margin-top:2px">● Conectado</div></div>
             <div style="padding:10px"><input type="text" placeholder="🔍  Buscar..." style="width:100%;font-size:12px"></div>
@@ -722,18 +722,43 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
             </div>
           </div>
           <div class="chat-side scrollbar-thin">
-            <div class="wpp-ok"><div class="wdot"></div>WhatsApp conectado</div>
-            <div style="margin-bottom:16px"><div class="cst">Respostas rápidas</div>
+            <div id="wpp-status-badge" class="wpp-ok"><div class="wdot"></div>WhatsApp conectado</div>
+
+            <!-- Config WPP - sempre visível -->
+            <div style="margin-bottom:14px">
+              <div class="cst">Conexão Evolution API
+                <span onclick="document.getElementById('wpp-cfg-body').style.display=document.getElementById('wpp-cfg-body').style.display==='none'?'block':'none'"
+                  style="cursor:pointer;color:var(--accent);margin-left:6px">⚙</span>
+              </div>
+              <div id="wpp-cfg-body" style="display:none">
+                <div class="form-group" style="margin-bottom:6px"><label>URL Evolution API</label><input type="text" id="wpp-url" placeholder="https://evo.seudominio.com" style="width:100%;font-size:12px"></div>
+                <div class="form-group" style="margin-bottom:6px"><label>API Key</label><input type="text" id="wpp-apikey" placeholder="sua-api-key" style="width:100%;font-size:12px"></div>
+                <div class="form-group" style="margin-bottom:6px"><label>Instância</label><input type="text" id="wpp-inst" placeholder="fleetpro" style="width:100%;font-size:12px" value="fleetpro"></div>
+                <div class="form-group" style="margin-bottom:6px"><label>URL Bridge Server</label><input type="text" id="wpp-bridge" placeholder="https://bridge.seudominio.com" style="width:100%;font-size:12px"></div>
+                <div class="form-group" style="margin-bottom:8px"><label>Secret</label><input type="text" id="wpp-secret" placeholder="FleetPro2025" style="width:100%;font-size:12px" value="FleetPro2025"></div>
+                <button class="btn btn-primary" style="width:100%;font-size:12px;margin-bottom:6px" onclick="conectarWpp()">⚡ Conectar</button>
+                <div style="font-size:10px;color:var(--muted2);line-height:1.4" id="webhook-url-display"></div>
+              </div>
+            </div>
+
+            <!-- Respostas rápidas -->
+            <div style="margin-bottom:14px"><div class="cst">Respostas rápidas</div>
               <div class="qr" onclick="setMsg(this.textContent)">Olá! Como posso ajudar? 😊</div>
               <div class="qr" onclick="setMsg(this.textContent)">Carros a partir de R$ 120/dia. Motos a partir de R$ 60/dia.</div>
               <div class="qr" onclick="setMsg(this.textContent)">Preciso de CNH, CPF e comprovante de residência.</div>
               <div class="qr" onclick="setMsg(this.textContent)">Posso gerar o contrato agora! Quando retira o veículo?</div>
               <div class="qr" onclick="setMsg(this.textContent)">Devolução das 8h às 19h.</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Veículo entregue! Obrigado pela preferência 🚗✅</div>
             </div>
-            <div><div class="cst">Personalização</div>
-              <div class="form-group" style="margin-bottom:8px"><label>Nome da locadora</label><input type="text" value="FleetPro Locadora" style="width:100%;font-size:12px"></div>
-              <div class="form-group" style="margin-bottom:8px"><label>Assinatura</label><textarea rows="2" style="width:100%;font-size:12px;resize:none">Equipe FleetPro 🚗🏍️</textarea></div>
-              <button class="btn btn-ghost" style="width:100%;font-size:12px">Salvar</button>
+
+            <!-- Personalização -->
+            <div><div class="cst">Assinatura</div>
+              <div class="form-group" style="margin-bottom:8px"><label>Nome da locadora</label><input type="text" id="wpp-nome-locadora" value="FleetPro Locadora" style="width:100%;font-size:12px"></div>
+              <div class="form-group" style="margin-bottom:8px"><label>Assinatura automática</label><textarea id="wpp-assinatura" rows="2" style="width:100%;font-size:12px;resize:none">— Equipe FleetPro 🚗🏍️</textarea></div>
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:8px">
+                <input type="checkbox" id="wpp-usar-assin" checked> Adicionar assinatura
+              </label>
+              <button class="btn btn-ghost" style="width:100%;font-size:12px" onclick="salvarPersonalizacao()">Salvar</button>
             </div>
           </div>
         </div>
@@ -804,6 +829,25 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
       <div class="form-group full"><label>Observações</label><textarea id="mc-obs" rows="2" style="width:100%;resize:none"></textarea></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('cliente')">Cancelar</button><button class="btn btn-primary" onclick="salvarCliente()">✓ Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR CLIENTE -->
+<div class="modal-overlay" id="m-editar-cliente">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">Editar Cliente</div><button class="modal-close" onclick="closeModal('editar-cliente')">✕</button></div>
+    <input type="hidden" id="ec-id">
+    <div class="form-grid">
+      <div class="form-group full"><label>Nome completo</label><input type="text" id="ec-nome" style="width:100%"></div>
+      <div class="form-group"><label>CPF</label><input type="text" id="ec-cpf" style="width:100%"></div>
+      <div class="form-group"><label>Telefone</label><input type="text" id="ec-tel" style="width:100%"></div>
+      <div class="form-group full"><label>Email</label><input type="email" id="ec-email" style="width:100%"></div>
+      <div class="form-group"><label>Nº CNH</label><input type="text" id="ec-cnh" style="width:100%"></div>
+      <div class="form-group"><label>Validade CNH</label><input type="date" id="ec-cnh-val" style="width:100%"></div>
+      <div class="form-group full"><label>Endereço</label><input type="text" id="ec-end" style="width:100%"></div>
+      <div class="form-group full"><label>Observações</label><textarea id="ec-obs" rows="2" style="width:100%;resize:none"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('editar-cliente')">Cancelar</button><button class="btn btn-primary" onclick="atualizarCliente()">✓ Salvar alterações</button></div>
   </div>
 </div>
 
@@ -1178,7 +1222,7 @@ function renderClientes(){
   tb.innerHTML=data.length?data.map(c=>{
     const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const [bg,fg]=palette[c.nome.charCodeAt(0)%palette.length].split(':');
-    return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="cavatar" style="width:34px;height:34px;font-size:12px;background:${bg};color:${fg}">${ini}</div><div><div style="font-weight:500">${c.nome}</div><div style="font-size:11px;color:var(--muted)">${c.email||''}</div></div></div></td><td>${c.cpf}</td><td>${c.telefone||'—'}</td><td>${c.cnh_validade?fmtData(c.cnh_validade):'—'}</td><td>${cnhBadge(c.cnh_validade)}</td><td><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="abrirChat('${c.id}')">Chat</button></td></tr>`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="cavatar" style="width:34px;height:34px;font-size:12px;background:${bg};color:${fg}">${ini}</div><div><div style="font-weight:500">${c.nome}</div><div style="font-size:11px;color:var(--muted)">${c.email||''}</div></div></div></td><td>${c.cpf}</td><td>${c.telefone||'—'}</td><td>${c.cnh_validade?fmtData(c.cnh_validade):'—'}</td><td>${cnhBadge(c.cnh_validade)}</td><td style="display:flex;gap:4px"><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="abrirChat('${c.id}')">Chat</button><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="editarCliente('${c.id}')">✏️ Editar</button></td></tr>`;
   }).join(''):'<tr class="empty-row"><td colspan="6">Nenhum cliente encontrado</td></tr>';
 }
 
@@ -1222,6 +1266,59 @@ async function salvarCliente(){
   }
 }
 
+function editarCliente(id){
+  const c = allClientes.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('ec-id').value = c.id;
+  document.getElementById('ec-nome').value = c.nome||'';
+  document.getElementById('ec-cpf').value = c.cpf||'';
+  document.getElementById('ec-tel').value = c.telefone||'';
+  document.getElementById('ec-email').value = c.email||'';
+  document.getElementById('ec-cnh').value = c.cnh||'';
+  document.getElementById('ec-cnh-val').value = c.cnh_validade||'';
+  document.getElementById('ec-end').value = c.endereco||'';
+  document.getElementById('ec-obs').value = c.observacoes||'';
+  document.getElementById('m-editar-cliente').classList.add('show');
+}
+
+async function atualizarCliente(){
+  const id = document.getElementById('ec-id').value;
+  if(!id) return;
+  const obj = {
+    nome:     document.getElementById('ec-nome').value.trim(),
+    cpf:      document.getElementById('ec-cpf').value.trim(),
+    telefone: document.getElementById('ec-tel').value.trim(),
+    email:    document.getElementById('ec-email').value.trim(),
+    cnh:      document.getElementById('ec-cnh').value.trim(),
+    cnh_validade: document.getElementById('ec-cnh-val').value||null,
+    endereco: document.getElementById('ec-end').value.trim(),
+    observacoes: document.getElementById('ec-obs').value.trim(),
+  };
+  if(!obj.nome||!obj.cpf){notify('Nome e CPF obrigatórios','error');return;}
+  const btn = document.querySelector('#m-editar-cliente .btn-primary');
+  if(btn){btn.disabled=true;btn.textContent='Salvando...';}
+  try{
+    const {error} = await sb.from('clientes').update(obj).eq('id',id);
+    if(error) throw error;
+    notify('Cliente atualizado!','success');
+    closeModal('editar-cliente');
+    await loadClientes();
+    renderDashboard();
+    renderChatContacts();
+  }catch(e){
+    notify('Erro: '+e.message,'error');
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='✓ Salvar alterações';}
+  }
+}
+
+function salvarPersonalizacao(){
+  const nome = document.getElementById('wpp-nome-locadora')?.value||'FleetPro Locadora';
+  const assin = document.getElementById('wpp-assinatura')?.value||'';
+  localStorage.setItem('fp_personalizacao', JSON.stringify({nome, assin}));
+  notify('Personalização salva!','success');
+}
+
 // ══ HISTÓRICO ══
 function renderHistVeiculosList(){filtrarHistVeiculos();}
 function filtrarHistVeiculos(){
@@ -1240,10 +1337,26 @@ async function verHistorico(vid){
   ]);
   const items=[...(locs||[]).map(l=>({...l,_t:'loc'})),...(mans||[]).map(m=>({...m,_t:'maint'}))].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
   const tl=document.getElementById('hist-tl');
-  tl.innerHTML=items.length?items.map(i=>i._t==='loc'
-    ?`<div class="tl-item"><div class="tl-dot rental"></div><div class="tl-title">Locação — ${i.clientes?.nome||'—'}</div><div class="tl-sub">${fmtData(i.data_inicio)} a ${fmtData(i.data_fim)} · R$ ${(i.total||0).toFixed(2)}</div><div class="tl-date">${fmtDt(i.created_at)}</div></div>`
-    :`<div class="tl-item"><div class="tl-dot maint"></div><div class="tl-title">Manutenção — ${i.tipo}</div><div class="tl-sub">${i.oficina||'—'}${i.custo?' · R$ '+parseFloat(i.custo).toFixed(2):''}</div><div class="tl-date">${fmtDt(i.created_at)}</div></div>`
-  ).join(''):'<p style="color:var(--muted2);font-size:13px">Sem histórico ainda.</p>';
+  tl.innerHTML=items.length?items.map(i=>{
+    if(i._t==='loc'){
+      const dias = i.data_inicio&&i.data_fim ? Math.ceil((new Date(i.data_fim)-new Date(i.data_inicio))/86400000) : '?';
+      const statusBadge = i.status==='ativa' ? '<span class="badge badge-green">Ativa</span>' : i.status==='encerrada' ? '<span class="badge badge-blue">Encerrada</span>' : '<span class="badge badge-red">Cancelada</span>';
+      return `<div class="tl-item"><div class="tl-dot rental"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <div class="tl-title">Locação — ${i.clientes?.nome||'—'}</div>${statusBadge}
+        </div>
+        <div class="tl-sub">📅 ${fmtData(i.data_inicio)} a ${fmtData(i.data_fim)} · ${dias} dias</div>
+        <div class="tl-sub">💰 R$ ${(i.diaria||0).toFixed(2)}/dia · Total: R$ ${(i.total||0).toFixed(2)}</div>
+        <div class="tl-sub">🔑 Km inicial: ${i.km_inicial||'—'}${i.km_final?' · Km final: '+i.km_final:''}</div>
+        <div class="tl-date">${fmtDt(i.created_at)}</div></div>`;
+    } else {
+      return `<div class="tl-item"><div class="tl-dot maint"></div>
+        <div class="tl-title">Manutenção — ${i.tipo}</div>
+        <div class="tl-sub">${i.oficina||'—'}${i.custo?' · R$ '+parseFloat(i.custo).toFixed(2):''}</div>
+        ${i.descricao?`<div class="tl-sub">${i.descricao}</div>`:''}
+        <div class="tl-date">${fmtDt(i.created_at)}</div></div>`;
+    }
+  }).join(''):'<p style="color:var(--muted2);font-size:13px">Sem histórico ainda. Cadastre uma locação ou manutenção.</p>';
   goPage('historico');
 }
 
