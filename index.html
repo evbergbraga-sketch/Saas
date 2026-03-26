@@ -435,20 +435,6 @@ insert into veiculos (tipo,marca,modelo,placa,ano,cor,cambio,km_atual,diaria,sta
   ('moto','Yamaha','Fazer 250','GHI-3322',2022,'Azul','Manual',15700,80,'disponivel'),
   ('moto','Honda','Biz 125','JKL-5544',2021,'Vermelha','Manual',22000,60,'disponivel');
 
--- ── MENSAGENS WHATSAPP ──
-create table wpp_mensagens (
-  id          uuid primary key default uuid_generate_v4(),
-  cliente_id  uuid references clientes(id),
-  numero      text not null,
-  texto       text,
-  tipo        text default 'text' check (tipo in ('text','image','audio','document')),
-  direcao     text default 'saida' check (direcao in ('saida','entrada')),
-  media_url   text,
-  created_at  timestamptz default now()
-);
-alter table wpp_mensagens enable row level security;
-create policy "Auth acessa wpp_msgs" on wpp_mensagens for all using (auth.role() = 'authenticated');
-
 insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
   ('Ana Lima','123.456.789-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="25444b44654048444c490b464a48">[email&#160;protected]</a>','(21) 99999-1111','AB123456','2028-06-15'),
   ('Carlos M.','987.654.321-00','<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="016260736d6e7241646c60686d2f626e6c">[email&#160;protected]</a>','(21) 98888-2222','CD789012','2025-04-30'),
@@ -712,131 +698,44 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
         </div>
       </div>
 
-      <!-- CHAT WHATSAPP COMPLETO -->
+      <!-- CHAT -->
       <div class="page" id="page-chat">
         <div class="chat-layout">
-
-          <!-- COLUNA ESQUERDA: lista de contatos -->
           <div class="chat-list">
-            <div class="chat-list-hdr">
-              💬 WhatsApp
-              <div id="wpp-status-badge" style="font-size:11px;font-weight:400;color:var(--muted);margin-top:2px">⚪ Desconectado</div>
-            </div>
-            <div style="padding:8px 10px">
-              <input type="text" id="chat-search" placeholder="🔍  Buscar contato..." style="width:100%;font-size:12px" oninput="filtrarContatos()">
-            </div>
+            <div class="chat-list-hdr">💬 WhatsApp<div style="font-size:11px;font-weight:400;color:var(--green);margin-top:2px">● Conectado</div></div>
+            <div style="padding:10px"><input type="text" placeholder="🔍  Buscar..." style="width:100%;font-size:12px"></div>
             <div id="chat-contacts"></div>
           </div>
-
-          <!-- COLUNA CENTRAL: janela de conversa -->
           <div class="chat-window">
-            <!-- Topo da conversa -->
             <div class="chat-top">
-              <div class="cavatar" id="chat-av">?</div>
-              <div style="flex:1">
-                <div style="font-size:13px;font-weight:600" id="chat-name">Selecione um contato</div>
-                <div style="font-size:11px;color:var(--muted)" id="chat-info">—</div>
-              </div>
-              <div style="display:flex;gap:6px">
-                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="goPage('clientes')">👤 Perfil</button>
-                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="enviarContrato()">📄 Contrato</button>
-                <button class="btn btn-primary" style="font-size:11px;padding:5px 10px" onclick="goPage('contratos')">+ Locação</button>
+              <div class="cavatar" id="chat-av" style="background:rgba(34,197,94,.12);color:var(--green)">?</div>
+              <div><div style="font-size:13px;font-weight:600" id="chat-name">Selecione</div><div style="font-size:11px;color:var(--muted)" id="chat-info">—</div></div>
+              <div style="margin-left:auto;display:flex;gap:8px">
+                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="goPage('clientes')">Perfil</button>
+                <button class="btn btn-primary" style="font-size:11px;padding:5px 10px" onclick="goPage('contratos')">Gerar contrato</button>
               </div>
             </div>
-
-            <!-- Área de mensagens -->
-            <div class="chat-msgs scrollbar-thin" id="chat-msgs">
-              <div style="text-align:center;font-size:12px;color:var(--muted2);margin:30px 0">Selecione um contato para ver a conversa</div>
-            </div>
-
-            <!-- Preview de arquivo -->
-            <div id="file-preview" style="display:none;padding:8px 18px;background:var(--bg3);border-top:1px solid var(--border);display:none;align-items:center;gap:10px">
-              <span id="file-preview-name" style="font-size:12px;color:var(--muted);flex:1"></span>
-              <button onclick="cancelarArquivo()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:18px">×</button>
-            </div>
-
-            <!-- Input de mensagem -->
+            <div class="chat-msgs scrollbar-thin" id="chat-msgs"><div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Selecione uma conversa</div></div>
             <div class="chat-input-area">
-              <!-- Upload imagem -->
-              <label title="Enviar imagem" style="cursor:pointer;display:flex;align-items:center;padding:0 4px">
-                <input type="file" id="file-img" accept="image/*" style="display:none" onchange="selecionarArquivo(this,'image')">
-                <span style="font-size:20px;color:var(--muted)">🖼</span>
-              </label>
-              <!-- Upload áudio -->
-              <label title="Enviar áudio" style="cursor:pointer;display:flex;align-items:center;padding:0 4px">
-                <input type="file" id="file-audio" accept="audio/*,.ogg,.mp3,.m4a,.aac" style="display:none" onchange="selecionarArquivo(this,'audio')">
-                <span style="font-size:20px;color:var(--muted)">🎵</span>
-              </label>
-              <!-- Gravar áudio -->
-              <button id="btn-record" title="Gravar áudio" onclick="toggleRecord()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);padding:0 4px">🎙</button>
-              <!-- Campo de texto -->
-              <input class="chat-input" id="chat-msg-input" placeholder="Digite uma mensagem..."
-                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}">
-              <!-- Enviar -->
-              <button class="btn btn-primary" onclick="sendMsg()" style="padding:9px 16px">Enviar</button>
+              <input class="chat-input" id="chat-msg-input" placeholder="Digite uma mensagem...">
+              <button class="btn btn-primary" onclick="sendMsg()">Enviar</button>
             </div>
           </div>
-
-          <!-- COLUNA DIREITA: configuração e respostas rápidas -->
           <div class="chat-side scrollbar-thin">
-
-            <!-- Status de conexão -->
-            <div id="wpp-conn-panel">
-              <div class="wpp-ok" id="wpp-ok-badge"><div class="wdot"></div>Conectado</div>
-              <!-- Config WPP -->
-              <div style="margin-bottom:14px">
-                <div class="cst">Configuração Evolution API v2</div>
-                <div class="form-group" style="margin-bottom:7px">
-                  <label>URL Evolution API (sua VPS)</label>
-                  <input type="text" id="wpp-url" placeholder="https://evo.seudominio.com" style="width:100%;font-size:12px">
-                </div>
-                <div class="form-group" style="margin-bottom:7px">
-                  <label>API Key da Evolution</label>
-                  <input type="text" id="wpp-apikey" placeholder="sua-api-key-evo" style="width:100%;font-size:12px">
-                </div>
-                <div class="form-group" style="margin-bottom:7px">
-                  <label>Nome da instância</label>
-                  <input type="text" id="wpp-inst" placeholder="fleetpro" style="width:100%;font-size:12px" value="fleetpro">
-                </div>
-                <div style="height:1px;background:var(--border);margin:8px 0"></div>
-                <div class="form-group" style="margin-bottom:7px">
-                  <label>URL do Bridge Server <span style="color:var(--accent)">★</span></label>
-                  <input type="text" id="wpp-bridge" placeholder="https://seudominio.com:3001" style="width:100%;font-size:12px">
-                  <div style="font-size:10px;color:var(--muted2);margin-top:3px">Node.js rodando na sua VPS (porta 3001)</div>
-                </div>
-                <div class="form-group" style="margin-bottom:7px">
-                  <label>Secret do Bridge</label>
-                  <input type="text" id="wpp-secret" placeholder="fleetpro-secret-2025" value="fleetpro-secret-2025" style="width:100%;font-size:12px">
-                </div>
-                <button class="btn btn-primary" style="width:100%;font-size:12px;margin-bottom:6px" onclick="conectarWpp()">⚡ Conectar tudo</button>
-                <div style="font-size:11px;color:var(--muted2);line-height:1.5;background:var(--bg3);padding:8px;border-radius:6px">
-                  Configure o n8n para fazer POST em:<br>
-                  <code id="webhook-url-display" style="color:var(--accent);font-size:10px;word-break:break-all">configure e conecte para ver a URL</code>
-                </div>
-              </div>
-            </div>
-
-            <!-- Respostas rápidas -->
-            <div style="margin-bottom:14px">
-              <div class="cst">Respostas rápidas</div>
+            <div class="wpp-ok"><div class="wdot"></div>WhatsApp conectado</div>
+            <div style="margin-bottom:16px"><div class="cst">Respostas rápidas</div>
               <div class="qr" onclick="setMsg(this.textContent)">Olá! Como posso ajudar? 😊</div>
               <div class="qr" onclick="setMsg(this.textContent)">Carros a partir de R$ 120/dia. Motos a partir de R$ 60/dia.</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Preciso de CNH, CPF e comprovante de residência para alugar.</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Posso gerar o contrato agora! Quando você retira o veículo?</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Devolução das 8h às 19h na nossa unidade.</div>
-              <div class="qr" onclick="setMsg(this.textContent)">Veículo entregue, obrigado pela preferência! 🚗✅</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Preciso de CNH, CPF e comprovante de residência.</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Posso gerar o contrato agora! Quando retira o veículo?</div>
+              <div class="qr" onclick="setMsg(this.textContent)">Devolução das 8h às 19h.</div>
             </div>
-
-            <!-- Assinatura -->
-            <div>
-              <div class="cst">Assinatura automática</div>
-              <textarea id="wpp-assinatura" rows="2" style="width:100%;font-size:12px;resize:none;margin-bottom:6px">— Equipe FleetPro 🚗🏍️</textarea>
-              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
-                <input type="checkbox" id="wpp-usar-assinatura" checked> Adicionar assinatura
-              </label>
+            <div><div class="cst">Personalização</div>
+              <div class="form-group" style="margin-bottom:8px"><label>Nome da locadora</label><input type="text" value="FleetPro Locadora" style="width:100%;font-size:12px"></div>
+              <div class="form-group" style="margin-bottom:8px"><label>Assinatura</label><textarea rows="2" style="width:100%;font-size:12px;resize:none">Equipe FleetPro 🚗🏍️</textarea></div>
+              <button class="btn btn-ghost" style="width:100%;font-size:12px">Salvar</button>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -926,13 +825,13 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
 
 <div class="notify" id="notify"></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const {createClient} = supabase;
 let sb = null;
 let currentUser = null, currentPerfil = null;
 let allVeiculos=[], allClientes=[], allLocacoes=[], allManutencoes=[], allPerfis=[];
 let histVeiculoId = null, chatMsgs = {}, activeChatId = null;
-let calYear=2025, calMonth=2;
+let calYear=new Date().getFullYear(), calMonth=2;
 const MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 // ══ ROLES CONFIG ══
@@ -1157,7 +1056,7 @@ function goPage(id, navEl){
   // Page-specific init
   if(id==='contratos'){previewContrato();populateContratosSelects();}
   if(id==='calendario'){renderCal();}
-  if(id==='chat'){renderChatContacts();setTimeout(preencherCamposWpp,200);}
+  if(id==='chat'){renderChatContacts();}
   if(id==='usuarios'){renderUsuarios();}
   if(id==='investidores'){renderInvestidores();}
   if(id==='historico'){renderHistVeiculosList();}
@@ -1390,219 +1289,211 @@ async function calSelectDay(d){
 }
 
 // ══ CHAT ══
-// ════════════════════════════════════════
-// WHATSAPP — integração real Evolution API v2
-// ════════════════════════════════════════
-let wppCfg = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
+// Config WhatsApp
+let wppCfg = {};
 let wppOk = false;
-let mediaQueue = null; // {file, tipo, base64}
-let mediaRec = null;   // MediaRecorder para gravar áudio
-let recChunks = [];
+let sseSource = null;
+const BRIDGE_URL_KEY = 'fp_bridge_url';
+const BRIDGE_SECRET_KEY = 'fp_bridge_secret';
+const EVO_CFG_KEY = 'fp_evo_cfg';
 
-function atualizarStatusWpp(ok){
+function fmtPhone(tel){
+  if(!tel) return '';
+  let n=tel.replace(/\D/g,'');
+  if(n.startsWith('0')) n=n.slice(1);
+  if(!n.startsWith('55')) n='55'+n;
+  return n;
+}
+
+// ── STATUS WPP ──
+function setWppStatus(ok, msg){
   wppOk = ok;
   const badge = document.getElementById('wpp-status-badge');
-  const okBadge = document.getElementById('wpp-ok-badge');
   if(badge) badge.innerHTML = ok
-    ? '<span style="color:var(--green)">🟢 Conectado</span>'
-    : '<span style="color:var(--red)">🔴 Desconectado</span>';
-  if(okBadge) okBadge.innerHTML = ok
-    ? '<div class="wdot"></div>WhatsApp conectado'
-    : '<div class="wdot" style="background:var(--red)"></div><span style="color:var(--red)">Desconectado — configure ao lado</span>';
-}
-
-// SSE connection handle
-let sseEventSource = null;
-
-async function conectarWpp(){
-  const evoUrl  = (document.getElementById('wpp-url')?.value||wppCfg.apiUrl||'').trim().replace(/\/$/,'');
-  const apiKey  = (document.getElementById('wpp-apikey')?.value||wppCfg.apiKey||'').trim();
-  const inst    = (document.getElementById('wpp-inst')?.value||wppCfg.instancia||'fleetpro').trim();
-  const bridgeUrl= (document.getElementById('wpp-bridge')?.value||wppCfg.bridgeUrl||'').trim().replace(/\/$/,'');
-  const secret  = (document.getElementById('wpp-secret')?.value||wppCfg.secret||'fleetpro-secret-2025').trim();
-
-  if(!evoUrl||!apiKey){ notify('Preencha URL da Evolution API e API Key','error'); return; }
-  if(!bridgeUrl){ notify('Preencha a URL do Bridge Server','error'); return; }
-
-  // 1. Testa conexão com a Evolution API
-  try{
-    const r = await fetch(`${evoUrl}/instance/fetchInstances`,{
-      headers:{'apikey':apiKey,'Content-Type':'application/json'}
-    });
-    if(!r.ok) throw new Error(`Evolution API: HTTP ${r.status}`);
-  }catch(e){
-    atualizarStatusWpp(false);
-    notify('Erro Evolution API: '+e.message,'error');
-    return;
+    ? '<span style="color:var(--green)">🟢 '+msg+'</span>'
+    : '<span style="color:var(--red)">🔴 '+msg+'</span>';
+  const okBadge = document.getElementById('wpp-ok-badge');
+  if(okBadge){
+    okBadge.style.background = ok ? 'rgba(34,197,94,.08)' : 'rgba(239,68,68,.08)';
+    okBadge.style.borderColor = ok ? 'rgba(34,197,94,.2)' : 'rgba(239,68,68,.2)';
+    okBadge.innerHTML = ok
+      ? '<div class="wdot"></div>WhatsApp conectado'
+      : '<div class="wdot" style="background:var(--red)"></div><span style="color:var(--red)">Desconectado</span>';
   }
-
-  // 2. Salva config
-  wppCfg={apiUrl:evoUrl, apiKey, instancia:inst, bridgeUrl, secret};
-  localStorage.setItem('fp_wpp',JSON.stringify(wppCfg));
-
-  // 3. Conecta SSE para recebimento em tempo real
-  conectarSSE(bridgeUrl, secret);
-
-  atualizarStatusWpp(true);
-  notify('WhatsApp conectado! Aguardando mensagens...','success');
-
-  // Mostra URL do webhook para configurar no n8n
-  const whUrl = document.getElementById('webhook-url-display');
-  if(whUrl) whUrl.textContent = `${bridgeUrl}/webhook/wpp  (header x-secret: ${secret})`;
 }
 
+// ── SSE ──
 function conectarSSE(bridgeUrl, secret){
-  // Fecha conexão anterior se existir
-  if(sseEventSource){ sseEventSource.close(); sseEventSource=null; }
-
-  const url = `${bridgeUrl}/events?secret=${encodeURIComponent(secret)}`;
-  sseEventSource = new EventSource(url);
-
-  sseEventSource.onopen = ()=>{
-    console.log('[SSE] Conectado ao bridge server');
-    atualizarStatusWpp(true);
-  };
-
-  sseEventSource.onmessage = (e)=>{
+  if(sseSource){ sseSource.close(); sseSource=null; }
+  const url = bridgeUrl.replace(/\/$/,'')+'/events?secret='+encodeURIComponent(secret);
+  sseSource = new EventSource(url);
+  sseSource.onopen = ()=>{ console.log('[SSE] Conectado'); setWppStatus(true,'Conectado'); };
+  sseSource.onmessage = e=>{
     try{
       const msg = JSON.parse(e.data);
-      if(msg.tipo==='wpp_msg_recebida') processarMsgRecebida(msg);
+      if(msg.tipo==='wpp_msg_recebida') receberMsgSSE(msg);
     }catch(_){}
   };
-
-  sseEventSource.onerror = ()=>{
-    console.warn('[SSE] Conexão perdida, tentando reconectar em 5s...');
-    atualizarStatusWpp(false);
-    setTimeout(()=>{
-      if(wppCfg.bridgeUrl) conectarSSE(wppCfg.bridgeUrl, wppCfg.secret);
-    }, 5000);
+  sseSource.onerror = ()=>{
+    console.warn('[SSE] Desconectado, reconectando em 5s...');
+    setWppStatus(false,'Reconectando...');
+    sseSource.close(); sseSource=null;
+    const cfg = JSON.parse(localStorage.getItem(EVO_CFG_KEY)||'{}');
+    if(cfg.bridgeUrl) setTimeout(()=>conectarSSE(cfg.bridgeUrl, cfg.secret||'FleetPro2025'), 5000);
   };
 }
 
-function processarMsgRecebida(msg){
+function receberMsgSSE(msg){
   // msg = { numero, clienteId, nomeCliente, texto, tipoMsg, mediaUrl, createdAt }
-  const cid = msg.clienteId || msg.numero;
+  const cid = msg.clienteId || encontrarClientePorNumero(msg.numero);
+  const msgObj = { texto: msg.texto, tipo: msg.tipoMsg||'text', direcao:'entrada',
+    media_url: msg.mediaUrl||null, created_at: msg.createdAt||new Date().toISOString() };
   if(!chatMsgs[cid]) chatMsgs[cid]=[];
-  chatMsgs[cid].push({
-    texto:    msg.texto,
-    tipo:     msg.tipoMsg||'text',
-    direcao:  'entrada',
-    media_url:msg.mediaUrl||null,
-    created_at:msg.createdAt||new Date().toISOString(),
-  });
-
-  // Atualiza UI se a conversa estiver aberta
-  if(activeChatId===cid || activeChatId===msg.clienteId){
-    renderChatMsgs(activeChatId);
-  }
+  chatMsgs[cid].push(msgObj);
+  if(activeChatId===cid) renderChatMsgs(cid);
   renderChatContacts();
-
-  // Notificação visual + sonora
   const nome = msg.nomeCliente||msg.numero;
-  const preview = msg.texto ? msg.texto.slice(0,40) : '(mídia)';
-  notify(`💬 ${nome}: ${preview}`, 'success');
-
-  // Badge no título da aba
-  document.title = `(!) FleetPro — Nova mensagem de ${nome}`;
-  setTimeout(()=>{ document.title='FleetPro — Sistema de Locadora'; }, 5000);
+  const prev = msg.texto ? msg.texto.slice(0,35) : '(mídia)';
+  notify('💬 '+nome+': '+prev,'success');
+  document.title='(!) FleetPro — Nova msg de '+nome;
+  setTimeout(()=>document.title='FleetPro — Sistema de Locadora',5000);
 }
 
-// Carrega config salva nos inputs ao abrir o chat
+function encontrarClientePorNumero(numero){
+  if(!numero) return null;
+  const numLimpo = numero.replace(/\D/g,'').slice(-11);
+  const c = allClientes.find(c=>(c.telefone||'').replace(/\D/g,'').slice(-11)===numLimpo);
+  return c ? c.id : numero;
+}
+
+// ── CONECTAR TUDO ──
+async function conectarWpp(){
+  const evoUrl   = (document.getElementById('wpp-url')?.value||'').trim().replace(/\/$/,'');
+  const apiKey   = (document.getElementById('wpp-apikey')?.value||'').trim();
+  const inst     = (document.getElementById('wpp-inst')?.value||'royalevo').trim();
+  const bridge   = (document.getElementById('wpp-bridge')?.value||'').trim().replace(/\/$/,'');
+  const secret   = (document.getElementById('wpp-secret')?.value||'FleetPro2025').trim();
+
+  if(!bridge){ notify('Preencha a URL do Bridge Server','error'); return; }
+
+  // Testa o bridge
+  try{
+    const r = await fetch(bridge+'/health', {signal: AbortSignal.timeout(5000)});
+    if(!r.ok) throw new Error('Bridge retornou '+r.status);
+  }catch(e){ notify('Bridge indisponível: '+e.message,'error'); return; }
+
+  // Salva config
+  const cfg = {apiUrl:evoUrl, apiKey, instancia:inst, bridgeUrl:bridge, secret};
+  localStorage.setItem(EVO_CFG_KEY, JSON.stringify(cfg));
+
+  // Conecta SSE
+  conectarSSE(bridge, secret);
+  setWppStatus(true,'Conectado');
+  notify('WhatsApp conectado! SSE ativo.','success');
+
+  // Mostra URL do webhook
+  const el = document.getElementById('webhook-url-display');
+  if(el) el.textContent = bridge+'/webhook/wpp  (header x-secret: '+secret+')';
+}
+
+// Preenche campos com config salva
 function preencherCamposWpp(){
-  if(wppCfg.apiUrl)    { const el=document.getElementById('wpp-url');    if(el) el.value=wppCfg.apiUrl; }
-  if(wppCfg.apiKey)    { const el=document.getElementById('wpp-apikey'); if(el) el.value=wppCfg.apiKey; }
-  if(wppCfg.instancia) { const el=document.getElementById('wpp-inst');   if(el) el.value=wppCfg.instancia; }
-  if(wppCfg.bridgeUrl) { const el=document.getElementById('wpp-bridge'); if(el) el.value=wppCfg.bridgeUrl; }
-  if(wppCfg.secret)    { const el=document.getElementById('wpp-secret'); if(el) el.value=wppCfg.secret; }
-  // Reconecta SSE se tiver config completa
-  if(wppCfg.bridgeUrl && wppCfg.secret){
-    conectarSSE(wppCfg.bridgeUrl, wppCfg.secret);
-    atualizarStatusWpp(true);
+  const cfg = JSON.parse(localStorage.getItem(EVO_CFG_KEY)||'{}');
+  if(cfg.apiUrl)   { const e=document.getElementById('wpp-url');    if(e) e.value=cfg.apiUrl; }
+  if(cfg.apiKey)   { const e=document.getElementById('wpp-apikey'); if(e) e.value=cfg.apiKey; }
+  if(cfg.instancia){ const e=document.getElementById('wpp-inst');   if(e) e.value=cfg.instancia; }
+  if(cfg.bridgeUrl){ const e=document.getElementById('wpp-bridge'); if(e) e.value=cfg.bridgeUrl; }
+  if(cfg.secret)   { const e=document.getElementById('wpp-secret'); if(e) e.value=cfg.secret; }
+  if(cfg.bridgeUrl){
+    const el=document.getElementById('webhook-url-display');
+    if(el) el.textContent=cfg.bridgeUrl+'/webhook/wpp  (header x-secret: '+(cfg.secret||'FleetPro2025')+')';
   }
-}
-
-// ── ENVIO DE TEXTO ──
-async function evoSendText(numero, texto){
-  const num = '55'+numero.replace(/\D/g,'');
-  const r = await fetch(`${wppCfg.apiUrl}/message/sendText/${wppCfg.instancia}`,{
-    method:'POST',
-    headers:{'apikey':wppCfg.apiKey,'Content-Type':'application/json'},
-    body:JSON.stringify({number:num, text:texto, delay:1000})
-  });
-  if(!r.ok){ const e=await r.text(); throw new Error(e); }
-  return await r.json();
-}
-
-// ── ENVIO DE MÍDIA (imagem/áudio/documento) ──
-async function evoSendMedia(numero, tipo, base64, nomeArq, caption=''){
-  const num = '55'+numero.replace(/\D/g,'');
-  let endpoint, body;
-  if(tipo==='image'){
-    endpoint='sendMedia';
-    body={number:num, mediatype:'image', mimetype:'image/jpeg', media:base64, fileName:nomeArq, caption};
-  } else if(tipo==='audio'){
-    endpoint='sendWhatsAppAudio';
-    body={number:num, audio:base64, delay:500};
-  } else {
-    endpoint='sendMedia';
-    body={number:num, mediatype:'document', mimetype:'application/pdf', media:base64, fileName:nomeArq, caption};
-  }
-  const r = await fetch(`${wppCfg.apiUrl}/message/${endpoint}/${wppCfg.instancia}`,{
-    method:'POST',
-    headers:{'apikey':wppCfg.apiKey,'Content-Type':'application/json'},
-    body:JSON.stringify(body)
-  });
-  if(!r.ok){ const e=await r.text(); throw new Error(e); }
-  return await r.json();
-}
-
-// ── SALVAR MENSAGEM NO SUPABASE ──
-async function salvarMsgDB(clienteId, numero, texto, tipo, direcao, mediaUrl=''){
-  if(!sb) return;
-  await sb.from('wpp_mensagens').insert({
-    cliente_id:clienteId, numero, texto, tipo, direcao,
-    media_url:mediaUrl||null,
-    created_at:new Date().toISOString()
-  }).catch(()=>{});
 }
 
 // ── CARREGAR MENSAGENS DO SUPABASE ──
 async function carregarMsgsDB(clienteId){
   if(!sb) return [];
-  const {data} = await sb.from('wpp_mensagens')
+  // Busca por cliente_id
+  const {data:byId} = await sb.from('wpp_mensagens')
     .select('*').eq('cliente_id',clienteId)
     .order('created_at',{ascending:true}).limit(200);
-  return data||[];
+
+  // Busca por número (para mensagens com cliente_id NULL)
+  const cliente = allClientes.find(c=>c.id===clienteId);
+  let byNumero = [];
+  if(cliente?.telefone){
+    const numLimpo = cliente.telefone.replace(/\D/g,'').slice(-11);
+    const {data:d} = await sb.from('wpp_mensagens')
+      .select('*').ilike('numero','%'+numLimpo+'%')
+      .is('cliente_id',null)
+      .order('created_at',{ascending:true}).limit(200);
+    byNumero = d||[];
+    // Vincula cliente_id nas mensagens órfãs em background
+    if(byNumero.length>0){
+      const ids = byNumero.map(m=>m.id);
+      sb.from('wpp_mensagens').update({cliente_id:clienteId}).in('id',ids).then(()=>{});
+    }
+  }
+
+  // Merge e deduplica
+  const vistos = new Set();
+  return [...(byId||[]),...byNumero]
+    .filter(m=>{ if(vistos.has(m.id)) return false; vistos.add(m.id); return true; })
+    .sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+}
+
+// ── SALVAR MSG NO SUPABASE ──
+async function salvarMsgDB(clienteId, numero, texto, tipo, direcao, mediaUrl){
+  if(!sb) return;
+  await sb.from('wpp_mensagens').insert({
+    cliente_id:clienteId||null, numero, texto, tipo, direcao,
+    media_url:mediaUrl||null, created_at:new Date().toISOString()
+  }).catch(e=>console.warn('salvarMsgDB:',e.message));
+}
+
+// ── ENVIO DE TEXTO ──
+async function evoSendText(telefone, texto){
+  const cfg = JSON.parse(localStorage.getItem(EVO_CFG_KEY)||'{}');
+  if(!cfg.apiUrl||!cfg.apiKey) throw new Error('Evolution API não configurada');
+  const num = fmtPhone(telefone);
+  const r = await fetch(cfg.apiUrl+'/message/sendText/'+cfg.instancia,{
+    method:'POST',
+    headers:{'apikey':cfg.apiKey,'Content-Type':'application/json'},
+    body:JSON.stringify({number:num, text:texto, delay:1000})
+  });
+  if(!r.ok){ const t=await r.text(); throw new Error(t); }
+  return await r.json();
 }
 
 // ── RENDER DE MENSAGENS ──
-function renderMsg(m){
-  const out = m.direcao==='saida';
-  const t   = m.created_at ? new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : m.time||'';
+function renderMsgItem(m){
+  const out = m.direcao==='saida' || m.out===true;
+  const t = m.created_at
+    ? new Date(m.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})
+    : (m.time||'');
   let corpo = '';
   if(m.tipo==='image' && m.media_url){
-    corpo = `<img src="${m.media_url}" style="max-width:220px;border-radius:8px;display:block;margin-bottom:4px">`;
-    if(m.texto) corpo += `<div style="font-size:12px">${m.texto}</div>`;
+    corpo = '<img src="'+m.media_url+'" style="max-width:220px;border-radius:8px;display:block;margin-bottom:4px">';
+    if(m.texto) corpo += '<div style="font-size:12px">'+m.texto+'</div>';
   } else if(m.tipo==='audio' && m.media_url){
-    corpo = `<audio controls style="max-width:220px"><source src="${m.media_url}"></audio>`;
-  } else if(m.tipo==='document' && m.media_url){
-    corpo = `<a href="${m.media_url}" target="_blank" style="color:var(--accent);font-size:13px">📄 ${m.texto||'Documento'}</a>`;
+    corpo = '<audio controls style="max-width:220px"><source src="'+m.media_url+'"></audio>';
   } else {
-    corpo = `<div style="white-space:pre-wrap">${(m.texto||'').replace(/</g,'&lt;')}</div>`;
+    const txt = (m.texto||m.text||'').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+    corpo = '<div style="white-space:pre-wrap">'+txt+'</div>';
   }
-  return `<div class="msg ${out?'msg-out':'msg-in'}">${corpo}<div class="msg-time">${t}</div></div>`;
+  return '<div class="msg '+(out?'msg-out':'msg-in')+'">'+corpo+'<div class="msg-time">'+t+'</div></div>';
 }
 
 async function renderChatMsgs(cid){
   const area = document.getElementById('chat-msgs');
-  area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:20px">Carregando...</div>';
-  const msgs = await carregarMsgsDB(cid);
-  // Merge com mensagens locais ainda não salvas
+  area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:20px">⏳ Carregando...</div>';
+  const dbMsgs = await carregarMsgsDB(cid);
+  // Merge com mensagens locais pendentes
   const locais = (chatMsgs[cid]||[]).filter(m=>m._local);
-  const todas  = [...msgs, ...locais].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+  const todas = [...dbMsgs,...locais].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
   area.innerHTML = todas.length
-    ? todas.map(renderMsg).join('')
-    : '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda. Inicie a conversa!</div>';
+    ? todas.map(renderMsgItem).join('')
+    : '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda.</div>';
   area.scrollTop = area.scrollHeight;
 }
 
@@ -1610,22 +1501,17 @@ function renderChatContacts(){
   const s = (document.getElementById('chat-search')?.value||'').toLowerCase();
   const clientes = allClientes.filter(c=>!s||c.nome.toLowerCase().includes(s)||(c.telefone||'').includes(s));
   document.getElementById('chat-contacts').innerHTML = clientes.map(c=>{
-    const ini = (c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
-    const lastMsg = (chatMsgs[c.id]||[]).slice(-1)[0];
-    const preview = lastMsg?.texto||'Toque para abrir conversa';
-    const unread  = (chatMsgs[c.id]||[]).filter(m=>!m.direcao||m.direcao==='entrada'&&!m._lido).length;
-    return `<div class="chat-item ${activeChatId===c.id?'active':''}" onclick="abrirChat('${c.id}')">
-      <div class="cavatar" style="background:var(--bg3)">${ini}</div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;font-weight:500">${c.nome}</span>
-          ${lastMsg?`<span style="font-size:10px;color:var(--muted2)">${new Date(lastMsg.created_at||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>`:''}
-        </div>
-        <div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px">${preview}</div>
-      </div>
-      ${unread>0?`<span style="background:var(--green);color:#000;font-size:10px;font-weight:700;border-radius:99px;padding:2px 6px;flex-shrink:0">${unread}</span>`:''}
-    </div>`;
-  }).join('')||'<div style="padding:16px;font-size:12px;color:var(--muted)">Nenhum cliente cadastrado</div>';
+    const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    const lastLocal = (chatMsgs[c.id]||[]).slice(-1)[0];
+    const preview = lastLocal?.texto||lastLocal?.text||'Toque para abrir';
+    return '<div class="chat-item '+(activeChatId===c.id?'active':'')+'" onclick="abrirChat(\''+c.id+'\')">'
+      +'<div class="cavatar">'+ini+'</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:13px;font-weight:500">'+c.nome+'</div>'
+        +'<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">'+preview+'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('')||'<div style="padding:16px;font-size:12px;color:var(--muted)">Sem clientes</div>';
 }
 
 function filtrarContatos(){ renderChatContacts(); }
@@ -1634,154 +1520,49 @@ function abrirChat(cid){
   activeChatId = cid;
   const c = allClientes.find(x=>x.id===cid);
   if(!c) return;
-  const ini = (c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   document.getElementById('chat-av').textContent = ini;
-  document.getElementById('chat-av').style.background = 'rgba(245,166,35,.15)';
-  document.getElementById('chat-av').style.color = 'var(--accent)';
   document.getElementById('chat-name').textContent = c.nome;
-  document.getElementById('chat-info').textContent = (c.telefone||'—')+' · '+((chatMsgs[cid]||[]).length)+' msgs';
+  document.getElementById('chat-info').textContent = c.telefone ? '📱 '+c.telefone : 'Sem telefone';
   renderChatMsgs(cid);
   renderChatContacts();
   if(!document.getElementById('page-chat').classList.contains('active')) goPage('chat');
 }
 
-// ── ENVIO PRINCIPAL ──
 async function sendMsg(){
   if(!activeChatId){ notify('Selecione um contato','error'); return; }
   const c = allClientes.find(x=>x.id===activeChatId);
   if(!c?.telefone){ notify('Cliente sem telefone cadastrado','error'); return; }
-
-  // Se tem arquivo na fila
-  if(mediaQueue){
-    await enviarMidia(c);
-    return;
-  }
-
-  const inp  = document.getElementById('chat-msg-input');
-  let texto  = inp.value.trim();
+  const inp = document.getElementById('chat-msg-input');
+  const texto = inp.value.trim();
   if(!texto) return;
 
-  // Adiciona assinatura se marcado
-  const usarAssin = document.getElementById('wpp-usar-assinatura')?.checked;
-  const assin     = document.getElementById('wpp-assinatura')?.value||'';
-  if(usarAssin && assin) texto = texto+'\n'+assin;
-
-  // Mensagem local imediata (UX otimista)
-  const msgLocal = {texto, tipo:'text', direcao:'saida', created_at:new Date().toISOString(), _local:true};
+  // Exibe localmente imediato
   if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
-  chatMsgs[activeChatId].push(msgLocal);
+  chatMsgs[activeChatId].push({texto, tipo:'text', direcao:'saida', out:true,
+    created_at:new Date().toISOString(), time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), _local:true});
   inp.value='';
   renderChatMsgs(activeChatId);
   renderChatContacts();
 
-  // Envia pelo WhatsApp real
-  if(wppOk){
-    try{
-      await evoSendText(c.telefone, texto);
-      await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida');
-      notify('Mensagem enviada ✓','success');
-    }catch(e){
-      notify('Erro ao enviar: '+e.message,'error');
-    }
-  } else {
-    notify('WhatsApp não conectado — configure ao lado','error');
-  }
-}
-
-async function enviarMidia(c){
-  if(!mediaQueue) return;
-  const {file, tipo, base64} = mediaQueue;
-  const caption = document.getElementById('chat-msg-input').value.trim();
-
-  const msgLocal = {texto:caption||file.name, tipo, direcao:'saida', created_at:new Date().toISOString(), _local:true,
-    media_url: tipo==='image' ? URL.createObjectURL(file) : null};
-  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
-  chatMsgs[activeChatId].push(msgLocal);
-  cancelarArquivo();
-  renderChatMsgs(activeChatId);
-
-  if(wppOk){
-    try{
-      await evoSendMedia(c.telefone, tipo, base64, file.name, caption);
-      await salvarMsgDB(activeChatId, c.telefone, caption||file.name, tipo, 'saida');
-      notify('Mídia enviada ✓','success');
-    }catch(e){
-      notify('Erro ao enviar mídia: '+e.message,'error');
-    }
-  } else {
-    notify('WhatsApp não conectado','error');
-  }
-}
-
-// ── ARQUIVOS ──
-function selecionarArquivo(input, tipo){
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e=>{
-    const base64 = e.target.result.split(',')[1];
-    mediaQueue = {file, tipo, base64};
-    const prev = document.getElementById('file-preview');
-    document.getElementById('file-preview-name').textContent = `${tipo==='image'?'🖼':'🎵'} ${file.name} (${(file.size/1024).toFixed(0)}KB)`;
-    prev.style.display='flex';
-    document.getElementById('chat-msg-input').placeholder = 'Legenda (opcional)...';
-  };
-  reader.readAsDataURL(file);
-}
-
-function cancelarArquivo(){
-  mediaQueue=null;
-  const prev=document.getElementById('file-preview');
-  if(prev) prev.style.display='none';
-  document.getElementById('chat-msg-input').placeholder='Digite uma mensagem...';
-  document.getElementById('file-img').value='';
-  document.getElementById('file-audio').value='';
-}
-
-// ── GRAVAÇÃO DE ÁUDIO ──
-async function toggleRecord(){
-  const btn = document.getElementById('btn-record');
-  if(mediaRec && mediaRec.state==='recording'){
-    mediaRec.stop();
-    btn.textContent='🎙'; btn.style.color='var(--muted)';
-    return;
-  }
-  try{
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    recChunks=[];
-    mediaRec = new MediaRecorder(stream, {mimeType:'audio/webm'});
-    mediaRec.ondataavailable = e=>recChunks.push(e.data);
-    mediaRec.onstop = ()=>{
-      const blob = new Blob(recChunks, {type:'audio/webm'});
-      const file = new File([blob],'audio.webm',{type:'audio/webm'});
-      const reader = new FileReader();
-      reader.onload = e=>{
-        mediaQueue = {file, tipo:'audio', base64:e.target.result.split(',')[1]};
-        document.getElementById('file-preview-name').textContent='🎙 Áudio gravado (pronto para enviar)';
-        document.getElementById('file-preview').style.display='flex';
-      };
-      reader.readAsDataURL(blob);
-      stream.getTracks().forEach(t=>t.stop());
-    };
-    mediaRec.start();
-    btn.textContent='⏹'; btn.style.color='var(--red)';
-    notify('Gravando... clique ⏹ para parar','success');
-  }catch(e){
-    notify('Permissão de microfone negada','error');
-  }
-}
-
-// ── ENVIAR CONTRATO ──
-async function enviarContrato(){
-  if(!activeChatId){ notify('Selecione um contato primeiro','error'); return; }
-  const c = allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
-  if(!wppOk){ notify('Configure o WhatsApp primeiro','error'); return; }
-  // Gera texto do contrato
-  const texto = `📄 *CONTRATO FLEETPRO*\n\nCliente: ${c.nome}\nCPF: ${c.cpf}\n\nAcesse o sistema para ver o contrato completo e assinar.\n\n_Equipe FleetPro 🚗🏍️_`;
+  // Envia pelo WhatsApp e salva no DB
   try{
     await evoSendText(c.telefone, texto);
-    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida');
+    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida', null);
+    notify('Mensagem enviada ✓','success');
+  }catch(e){
+    notify('Erro ao enviar: '+e.message,'error');
+  }
+}
+
+async function enviarContrato(){
+  if(!activeChatId){ notify('Selecione um contato','error'); return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
+  const texto = '📄 *CONTRATO FLEETPRO*\n\nCliente: '+c.nome+'\nCPF: '+c.cpf+'\n\nAcesse o sistema para ver e assinar o contrato.\n\n_Equipe FleetPro 🚗🏍️_';
+  try{
+    await evoSendText(c.telefone, texto);
+    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida', null);
     notify('Contrato enviado pelo WhatsApp!','success');
     renderChatMsgs(activeChatId);
   }catch(e){
@@ -1789,60 +1570,25 @@ async function enviarContrato(){
   }
 }
 
-// ── RECEBIMENTO via n8n webhook ──
-// O n8n faz POST para esta função via postMessage (se no mesmo domínio)
-// ou você expõe um endpoint no seu backend que chama receberMsgWpp()
-async function receberMsgWpp(payload){
-  // payload da Evolution API v2:
-  // { data: { key: { remoteJid }, message: { conversation / imageMessage / audioMessage }, messageType } }
-  try{
-    const jid     = payload?.data?.key?.remoteJid||'';
-    const numero  = jid.replace('@s.whatsapp.net','').replace('@g.us','');
-    const tipo    = payload?.data?.messageType||'conversation';
-    let texto='', mediaUrl='', tipoMsg='text';
-
-    if(tipo==='conversation'||tipo==='extendedTextMessage'){
-      texto = payload?.data?.message?.conversation || payload?.data?.message?.extendedTextMessage?.text||'';
-    } else if(tipo==='imageMessage'){
-      tipoMsg='image';
-      texto = payload?.data?.message?.imageMessage?.caption||'';
-      mediaUrl = payload?.data?.message?.imageMessage?.url||'';
-    } else if(tipo==='audioMessage'||tipo==='pttMessage'){
-      tipoMsg='audio';
-      mediaUrl = payload?.data?.message?.audioMessage?.url||payload?.data?.message?.pttMessage?.url||'';
-    } else if(tipo==='documentMessage'){
-      tipoMsg='document';
-      texto = payload?.data?.message?.documentMessage?.fileName||'Documento';
-      mediaUrl = payload?.data?.message?.documentMessage?.url||'';
-    } else { return; }
-
-    // Encontra cliente pelo número
-    const numLimpo = numero.replace(/\D/g,'').slice(-11);
-    const cliente = allClientes.find(c=>(c.telefone||'').replace(/\D/g,'').slice(-11)===numLimpo);
-    const cid = cliente?.id||numero;
-
-    // Salva no DB e na memória local
-    const msg = {texto, tipo:tipoMsg, direcao:'entrada', created_at:new Date().toISOString(), media_url:mediaUrl};
-    if(!chatMsgs[cid]) chatMsgs[cid]=[];
-    chatMsgs[cid].push(msg);
-    if(sb) await salvarMsgDB(cid, numero, texto, tipoMsg, 'entrada', mediaUrl);
-
-    // Atualiza UI se conversa aberta
-    if(activeChatId===cid) renderChatMsgs(cid);
-    renderChatContacts();
-
-    // Notificação
-    const nomeExib = cliente?.nome||numero;
-    notify(`💬 Nova msg de ${nomeExib}${texto?' : '+texto.slice(0,30):' (mídia)'}`, 'success');
-
-  }catch(e){ console.error('receberMsgWpp error:',e); }
+// Upload de arquivo
+let mediaQueue = null;
+function selecionarArquivo(input, tipo){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    mediaQueue = {file, tipo, base64:e.target.result.split(',')[1]};
+    const prev = document.getElementById('file-preview');
+    if(prev){ document.getElementById('file-preview-name').textContent=(tipo==='image'?'🖼 ':'🎵 ')+file.name; prev.style.display='flex'; }
+  };
+  reader.readAsDataURL(file);
 }
-
-// Escuta mensagens vindas do n8n via postMessage (quando n8n e sistema no mesmo domínio)
-window.addEventListener('message', e=>{
-  if(e.data?.tipo==='wpp_msg_recebida') receberMsgWpp(e.data.payload);
-});
-
+function cancelarArquivo(){
+  mediaQueue=null;
+  const prev=document.getElementById('file-preview'); if(prev) prev.style.display='none';
+  const fi=document.getElementById('file-img'); if(fi) fi.value='';
+  const fa=document.getElementById('file-audio'); if(fa) fa.value='';
+}
+function toggleRecord(){ notify('Gravação em breve','success'); }
 function setMsg(t){ document.getElementById('chat-msg-input').value=t; }
 
 // ══ USUÁRIOS (admin only) ══
@@ -1867,54 +1613,29 @@ async function renderUsuarios(){
     </div>`;
   }).join('')||'<p style="color:var(--muted2)">Nenhum usuário encontrado.</p>';
 }
-
 async function alterarPerfil(uid,novoPerfil){
   const {error}=await sb.from('perfis').update({perfil:novoPerfil}).eq('id',uid);
   if(error){notify('Erro: '+error.message,'error');return;}
-  notify('Perfil atualizado!','success');
-  renderUsuarios();
+  notify('Perfil atualizado!','success'); renderUsuarios();
 }
 
 // ══ INVESTIDORES ══
 function renderInvestidores(){
   const el=document.getElementById('page-investidores');
-  if(currentPerfil?.perfil==='investidor'){
-    // Vista completa para investidores
-    el.innerHTML=`
-      <div class="stats-grid">
-        <div class="stat-card" style="--accent-color:var(--green)"><div class="stat-icon">💰</div><div class="stat-label">Receita estimada/mês</div><div class="stat-val" style="color:var(--green)">R$ ${calcReceitaMes()}</div><div class="stat-sub">baseado em locações ativas</div></div>
-        <div class="stat-card" style="--accent-color:var(--blue)"><div class="stat-icon">🚗</div><div class="stat-label">Total de veículos</div><div class="stat-val" style="color:var(--blue)">${allVeiculos.length}</div><div class="stat-sub">${allVeiculos.filter(v=>v.status==='disponivel').length} disponíveis</div></div>
-        <div class="stat-card" style="--accent-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-label">Locações ativas</div><div class="stat-val" style="color:var(--accent)">${allLocacoes.length}</div><div class="stat-sub">taxa de ocupação: ${calcOcupacao()}%</div></div>
-        <div class="stat-card" style="--accent-color:var(--purple)"><div class="stat-icon">👥</div><div class="stat-label">Base de clientes</div><div class="stat-val" style="color:var(--purple)">${allClientes.length}</div><div class="stat-sub">clientes cadastrados</div></div>
-      </div>
-      <div class="card"><div class="card-header"><span class="card-title">Relatório de frota</span></div>
-        <table><thead><tr><th>Veículo</th><th>Tipo</th><th>Status</th><th>Diária</th></tr></thead>
-        <tbody>${allVeiculos.map(v=>`<tr><td><div style="font-weight:500">${v.marca} ${v.modelo}</div><div style="font-size:11px;color:var(--muted)">${v.placa}</div></td><td>${v.tipo==='carro'?'🚗 Carro':'🏍️ Moto'}</td><td>${statusBadge(v.status)}</td><td style="color:var(--accent);font-weight:600">R$ ${(v.diaria||0).toFixed(2)}</td></tr>`).join('')}</tbody></table>
-      </div>`;
-  } else {
-    // Admin vê o painel + aviso de que investidores têm acesso limitado
-    el.innerHTML=`
-      <div style="margin-bottom:20px;padding:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:10px;font-size:13px;color:var(--purple)">
-        📊 Investidores com login próprio veem apenas esta área com as métricas abaixo.
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card" style="--accent-color:var(--green)"><div class="stat-icon">💰</div><div class="stat-label">Receita estimada/mês</div><div class="stat-val" style="color:var(--green)">R$ ${calcReceitaMes()}</div><div class="stat-sub">locações ativas</div></div>
-        <div class="stat-card" style="--accent-color:var(--blue)"><div class="stat-icon">🚗</div><div class="stat-label">Total de veículos</div><div class="stat-val" style="color:var(--blue)">${allVeiculos.length}</div></div>
-        <div class="stat-card" style="--accent-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-label">Locações ativas</div><div class="stat-val" style="color:var(--accent)">${allLocacoes.length}</div></div>
-        <div class="stat-card" style="--accent-color:var(--purple)"><div class="stat-icon">👥</div><div class="stat-label">Clientes</div><div class="stat-val" style="color:var(--purple)">${allClientes.length}</div></div>
-      </div>`;
-  }
+  const stats=`<div class="stats-grid">
+    <div class="stat-card" style="--accent-color:var(--green)"><div class="stat-icon">💰</div><div class="stat-label">Receita estimada/mês</div><div class="stat-val" style="color:var(--green)">R$ ${calcReceitaMes()}</div><div class="stat-sub">locações ativas</div></div>
+    <div class="stat-card" style="--accent-color:var(--blue)"><div class="stat-icon">🚗</div><div class="stat-label">Total veículos</div><div class="stat-val" style="color:var(--blue)">${allVeiculos.length}</div><div class="stat-sub">${allVeiculos.filter(v=>v.status==='disponivel').length} disponíveis</div></div>
+    <div class="stat-card" style="--accent-color:var(--accent)"><div class="stat-icon">📋</div><div class="stat-label">Locações ativas</div><div class="stat-val" style="color:var(--accent)">${allLocacoes.length}</div><div class="stat-sub">ocupação: ${calcOcupacao()}%</div></div>
+    <div class="stat-card" style="--accent-color:var(--purple)"><div class="stat-icon">👥</div><div class="stat-label">Clientes</div><div class="stat-val" style="color:var(--purple)">${allClientes.length}</div><div class="stat-sub">cadastrados</div></div>
+  </div>`;
+  const nota=currentPerfil?.perfil==='admin'?`<div style="margin-bottom:20px;padding:14px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:10px;font-size:13px;color:var(--purple)">📊 Investidores com login próprio veem apenas esta área.</div>`:'';
+  el.innerHTML=nota+stats+`<div class="card"><div class="card-header"><span class="card-title">Relatório de frota</span></div>
+    <table><thead><tr><th>Veículo</th><th>Tipo</th><th>Status</th><th>Diária</th></tr></thead>
+    <tbody>${allVeiculos.map(v=>`<tr><td><div style="font-weight:500">${v.marca} ${v.modelo}</div><div style="font-size:11px;color:var(--muted)">${v.placa}</div></td><td>${v.tipo==='carro'?'🚗 Carro':'🏍️ Moto'}</td><td>${statusBadge(v.status)}</td><td style="color:var(--accent);font-weight:600">R$ ${(v.diaria||0).toFixed(2)}</td></tr>`).join('')}</tbody></table>
+  </div>`;
 }
-function calcReceitaMes(){
-  return allLocacoes.reduce((acc,l)=>{
-    const dias=Math.min(30,Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000));
-    return acc+(l.diaria||0)*dias;
-  },0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-function calcOcupacao(){
-  if(!allVeiculos.length) return 0;
-  return Math.round(allLocacoes.length/allVeiculos.length*100);
-}
+function calcReceitaMes(){return allLocacoes.reduce((acc,l)=>{const dias=Math.min(30,Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000));return acc+(l.diaria||0)*dias;},0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function calcOcupacao(){if(!allVeiculos.length) return 0;return Math.round(allLocacoes.length/allVeiculos.length*100);}
 
 // ══ MODALS ══
 function openModal(type,subtipo){
@@ -1947,42 +1668,33 @@ function notify(msg,type='success'){
 window.addEventListener('DOMContentLoaded',async()=>{
   const url=localStorage.getItem('fp_url');
   const key=localStorage.getItem('fp_key');
-
   if(!url||!key){ goLayer('setup'); return; }
 
   sb = createClient(url, key);
-
-  // Verifica sessão existente — evita pedir login toda vez
-  try {
-    const {data:{session}, error} = await sb.auth.getSession();
+  try{
+    const {data:{session},error} = await sb.auth.getSession();
     if(error) throw error;
     if(session?.user){
       await carregarPerfil(session.user);
     } else {
       goLayer('login');
     }
-  } catch(e) {
-    // Credenciais inválidas — limpa e mostra setup novamente
-    localStorage.removeItem('fp_url');
-    localStorage.removeItem('fp_key');
+  }catch(e){
+    localStorage.removeItem('fp_url'); localStorage.removeItem('fp_key');
     goLayer('setup');
   }
 
   sb.auth.onAuthStateChange(async(event,session)=>{
-    if(event==='SIGNED_IN' && session?.user) await carregarPerfil(session.user);
+    if(event==='SIGNED_IN'&&session?.user) await carregarPerfil(session.user);
     if(event==='SIGNED_OUT') goLayer('login');
   });
 
-  // WhatsApp — reconecta se havia config salva
-  const wppSaved = JSON.parse(localStorage.getItem('fp_wpp')||'{}');
-  if(wppSaved.apiUrl && wppSaved.apiKey){
-    wppConfig = wppSaved;
-    conectarWpp(wppSaved.apiUrl, wppSaved.apiKey, wppSaved.instancia);
+  // Reconecta SSE se havia config salva
+  const cfg = JSON.parse(localStorage.getItem('fp_evo_cfg')||'{}');
+  if(cfg.bridgeUrl && cfg.secret){
+    conectarSSE(cfg.bridgeUrl, cfg.secret);
   }
-  renderWppPanel();
 });
-
-
 
 </script>
 </body>
