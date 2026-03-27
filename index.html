@@ -2065,46 +2065,6 @@ async function enviarContratoChat(){
   }
 }
 
-// Arquivo selecionado para envio
-let _mediaFile = null, _mediaType = '';
-function selecionarArquivo(input, tipo){
-  const file = input.files[0]; if(!file) return;
-  _mediaFile = file; _mediaType = tipo;
-  const prev = document.getElementById('chat-file-preview');
-  const name = document.getElementById('chat-file-name');
-  if(prev){ prev.style.display='flex'; }
-  if(name) name.textContent = (tipo==='image'?'🖼 ':'🎵 ') + file.name;
-}
-function cancelarArquivo(){
-  _mediaFile=null; _mediaType='';
-  document.getElementById('chat-file-preview').style.display='none';
-  document.getElementById('chat-file-input').value='';
-  document.getElementById('chat-audio-input').value='';
-}
-async function enviarArquivo(){
-  if(!_mediaFile||!activeChatId){ return; }
-  const c = allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
-  try{
-    const cfg = JSON.parse(localStorage.getItem(EVO_CFG_KEY)||'{}');
-    const num = fmtPhone(c.telefone);
-    const fd = new FormData();
-    fd.append('number', num);
-    fd.append('options', JSON.stringify({delay:1000}));
-    const endpoint = _mediaType==='audio' ? 'sendWhatsAppAudio' : 'sendMedia';
-    fd.append('media', _mediaFile);
-    const r = await fetch(cfg.apiUrl+'/message/'+endpoint+'/'+cfg.instancia,{
-      method:'POST', headers:{'apikey':cfg.apiKey}, body:fd
-    });
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    await salvarMsgDB(activeChatId, c.telefone, _mediaFile.name, _mediaType==='audio'?'audio':'image', 'saida', null);
-    notify('Arquivo enviado! ✓','success');
-    cancelarArquivo();
-    renderChatMsgs(activeChatId);
-  }catch(e){
-    notify('Erro ao enviar arquivo: '+e.message,'error');
-  }
-}
 
 // Envia contrato resumido pelo WhatsApp direto do chat
 async function enviarContratoWpp(){
@@ -2313,7 +2273,6 @@ async function toggleGravarAudio(){
   }
 }
 
-let mediaQueue = null;
 function selecionarArquivo(input, tipo){
   const file = input.files[0]; if(!file) return;
   const reader = new FileReader();
