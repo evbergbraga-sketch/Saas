@@ -116,11 +116,11 @@ nav{flex:1;padding:14px 10px;overflow-y:auto;}
 .btn-primary:hover{background:var(--accent2);}
 .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2);}
 .btn-ghost:hover{color:var(--text);background:var(--bg3);}
-.content{flex:1;overflow-y:auto;padding:28px;min-height:0;}
+.content{flex:1;overflow:hidden;padding:28px;min-height:0;display:flex;flex-direction:column;}
 
 /* ══ PAGES ══ */
-.page{display:none;}
-.page.active{display:block;}
+.page{display:none;flex:1;overflow-y:auto;}
+.page.active{display:flex;flex-direction:column;}
 
 /* ══ STATS ══ */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
@@ -699,11 +699,11 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
       </div>
 
       <!-- CHAT -->
-      <div class="page" id="page-chat" style="height:calc(100vh - 130px);overflow:hidden;">
-        <div class="chat-layout" style="height:100%;">
+      <div class="page" id="page-chat" style="height:100%;overflow:hidden;padding:0;">
+        <div class="chat-layout" style="height:calc(100vh - 130px);">
           <div class="chat-list">
             <div class="chat-list-hdr">💬 WhatsApp<div style="font-size:11px;font-weight:400;color:var(--green);margin-top:2px">● Conectado</div></div>
-            <div style="padding:10px"><input type="text" placeholder="🔍  Buscar..." style="width:100%;font-size:12px"></div>
+            <div style="padding:10px"><input type="text" id="chat-search" placeholder="🔍  Buscar..." oninput="filtrarContatos()" style="width:100%;font-size:12px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:8px 12px;border-radius:8px;outline:none"></div>
             <div id="chat-contacts"></div>
           </div>
           <div class="chat-window">
@@ -711,25 +711,44 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
               <div class="cavatar" id="chat-av" style="background:rgba(34,197,94,.12);color:var(--green)">?</div>
               <div><div style="font-size:13px;font-weight:600" id="chat-name">Selecione</div><div style="font-size:11px;color:var(--muted)" id="chat-info">—</div></div>
               <div style="margin-left:auto;display:flex;gap:8px">
-                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="goPage('clientes')">Perfil</button>
+                <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="verPerfilCliente()">Perfil</button>
                 <button class="btn btn-primary" style="font-size:11px;padding:5px 10px" onclick="goPage('contratos')">Gerar contrato</button>
               </div>
             </div>
             <div class="chat-msgs scrollbar-thin" id="chat-msgs"><div style="text-align:center;font-size:12px;color:var(--muted2);margin:20px 0">Selecione uma conversa</div></div>
-            <div class="chat-input-area">
-              <input class="chat-input" id="chat-msg-input" placeholder="Digite uma mensagem...">
-              <button class="btn btn-primary" onclick="sendMsg()">Enviar</button>
+            <div class="chat-input-area" style="flex-direction:column;gap:8px">
+              <div style="display:flex;gap:6px;align-items:center">
+                <!-- Botão enviar imagem -->
+                <label title="Enviar imagem" style="cursor:pointer;padding:6px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:16px;display:flex;align-items:center">
+                  🖼️<input type="file" accept="image/*" style="display:none" onchange="enviarArquivo(this,'image')">
+                </label>
+                <!-- Botão enviar documento -->
+                <label title="Enviar documento" style="cursor:pointer;padding:6px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:16px;display:flex;align-items:center">
+                  📎<input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="enviarArquivo(this,'document')">
+                </label>
+                <!-- Botão gravar áudio pelo microfone -->
+                <button id="btn-mic" title="Gravar áudio" onclick="toggleGravarAudio()" style="cursor:pointer;padding:6px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:16px;transition:all .2s">🎙️</button>
+                <!-- Ou enviar arquivo de áudio -->
+                <label title="Enviar arquivo de áudio" style="cursor:pointer;padding:6px 10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;font-size:16px;display:flex;align-items:center">
+                  🎵<input type="file" accept="audio/*" style="display:none" onchange="enviarArquivo(this,'audio')">
+                </label>
+                <!-- Botão enviar contrato -->
+                <button title="Enviar último contrato pelo WhatsApp" onclick="enviarContratoChat()" style="cursor:pointer;padding:6px 10px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:8px;font-size:16px" id="btn-enviar-contrato">📄</button>
+                <input class="chat-input" id="chat-msg-input" placeholder="Digite uma mensagem..." style="flex:1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}">
+                <button class="btn btn-primary" onclick="sendMsg()">Enviar</button>
+              </div>
+              <div id="media-preview" style="display:none;font-size:12px;color:var(--muted);padding:4px 8px;background:var(--bg3);border-radius:6px;display:flex;align-items:center;gap:8px">
+                <span id="media-preview-txt"></span>
+                <button onclick="cancelarMidia()" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px">✕</button>
+              </div>
             </div>
           </div>
           <div class="chat-side scrollbar-thin">
-            <div id="wpp-status-badge" class="wpp-ok"><div class="wdot"></div>WhatsApp conectado</div>
+            <div id="wpp-status-badge" class="wpp-ok" style="cursor:pointer" onclick="document.getElementById('wpp-cfg-body').style.display=document.getElementById('wpp-cfg-body').style.display==='none'?'block':'none'"><div class="wdot" id="wpp-dot"></div><span id="wpp-status-txt">WhatsApp conectado</span> <span style="font-size:10px;color:var(--muted)">⚙</span></div>
 
             <!-- Config WPP - sempre visível -->
             <div style="margin-bottom:14px">
-              <div class="cst">Conexão Evolution API
-                <span onclick="document.getElementById('wpp-cfg-body').style.display=document.getElementById('wpp-cfg-body').style.display==='none'?'block':'none'"
-                  style="cursor:pointer;color:var(--accent);margin-left:6px">⚙</span>
-              </div>
+              <div class="cst" style="cursor:pointer" onclick="document.getElementById('wpp-cfg-body').style.display=document.getElementById('wpp-cfg-body').style.display==='none'?'block':'none'">Conexão WPP <span style="color:var(--accent)">⚙ configurar</span></div>
               <div id="wpp-cfg-body" style="display:none">
                 <div class="form-group" style="margin-bottom:6px"><label>URL Evolution API</label><input type="text" id="wpp-url" placeholder="https://evo.seudominio.com" style="width:100%;font-size:12px"></div>
                 <div class="form-group" style="margin-bottom:6px"><label>API Key</label><input type="text" id="wpp-apikey" placeholder="sua-api-key" style="width:100%;font-size:12px"></div>
@@ -795,6 +814,17 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
   </main>
 </div>
 
+<!-- MODAL PERFIL CLIENTE -->
+<div class="modal-overlay" id="m-perfil-cliente">
+  <div class="modal" style="max-width:620px;width:90vw">
+    <div class="modal-header">
+      <div class="modal-title" id="perfil-cli-titulo">Perfil do Cliente</div>
+      <button class="modal-close" onclick="closeModal('perfil-cliente')">✕</button>
+    </div>
+    <div id="perfil-cli-body" style="padding:0 0 16px"></div>
+  </div>
+</div>
+
 <!-- ══ MODAIS ══ -->
 <div class="modal-overlay" id="m-veiculo">
   <div class="modal">
@@ -829,6 +859,17 @@ insert into clientes (nome,cpf,email,telefone,cnh,cnh_validade) values
       <div class="form-group full"><label>Observações</label><textarea id="mc-obs" rows="2" style="width:100%;resize:none"></textarea></div>
     </div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('cliente')">Cancelar</button><button class="btn btn-primary" onclick="salvarCliente()">✓ Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL PERFIL CLIENTE -->
+<div class="modal-overlay" id="m-perfil-cliente">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <div class="modal-title">Perfil do Cliente</div>
+      <button class="modal-close" onclick="closeModal('perfil-cliente')">✕</button>
+    </div>
+    <div id="perfil-cliente-body" style="max-height:70vh;overflow-y:auto;padding:4px"></div>
   </div>
 </div>
 
@@ -1100,7 +1141,14 @@ function goPage(id, navEl){
   // Page-specific init
   if(id==='contratos'){previewContrato();populateContratosSelects();}
   if(id==='calendario'){renderCal();}
-  if(id==='chat'){renderChatContacts(); if(activeChatId) renderChatMsgs(activeChatId);}
+  if(id==='chat'){
+    renderChatContacts();
+    if(activeChatId){
+      const area=document.getElementById('chat-msgs');
+      if(area && area.innerHTML.includes('Carregando')) renderChatMsgs(activeChatId);
+      else if(activeChatId) renderChatMsgs(activeChatId);
+    }
+  }
   if(id==='usuarios'){renderUsuarios();}
   if(id==='investidores'){renderInvestidores();}
   if(id==='historico'){renderHistVeiculosList();}
@@ -1121,7 +1169,7 @@ async function carregarTudo(){
 }
 async function loadVeiculos(){const {data}=await sb.from('veiculos').select('*').order('created_at',{ascending:false});allVeiculos=data||[];renderVeiculos();}
 async function loadClientes(){const {data}=await sb.from('clientes').select('*').order('nome');allClientes=data||[];renderClientes();}
-async function loadLocacoes(){const {data}=await sb.from('locacoes').select('*,veiculos(*),clientes(*)').eq('status','ativa').order('data_fim');allLocacoes=data||[];}
+async function loadLocacoes(){const {data}=await sb.from('locacoes').select('*,veiculos(*),clientes(*)').order('data_fim',{ascending:false});allLocacoes=data||[];}
 async function loadManutencoes(){const {data}=await sb.from('manutencoes').select('*,veiculos(*)').order('created_at',{ascending:false});allManutencoes=data||[];}
 
 // ══ DASHBOARD ══
@@ -1222,7 +1270,7 @@ function renderClientes(){
   tb.innerHTML=data.length?data.map(c=>{
     const ini=(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const [bg,fg]=palette[c.nome.charCodeAt(0)%palette.length].split(':');
-    return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="cavatar" style="width:34px;height:34px;font-size:12px;background:${bg};color:${fg}">${ini}</div><div><div style="font-weight:500">${c.nome}</div><div style="font-size:11px;color:var(--muted)">${c.email||''}</div></div></div></td><td>${c.cpf}</td><td>${c.telefone||'—'}</td><td>${c.cnh_validade?fmtData(c.cnh_validade):'—'}</td><td>${cnhBadge(c.cnh_validade)}</td><td style="display:flex;gap:4px"><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="abrirChat('${c.id}')">Chat</button><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="editarCliente('${c.id}')">✏️ Editar</button></td></tr>`;
+    return `<tr><td><div style="display:flex;align-items:center;gap:10px"><div class="cavatar" style="width:34px;height:34px;font-size:12px;background:${bg};color:${fg}">${ini}</div><div><div style="font-weight:500">${c.nome}</div><div style="font-size:11px;color:var(--muted)">${c.email||''}</div></div></div></td><td>${c.cpf}</td><td>${c.telefone||'—'}</td><td>${c.cnh_validade?fmtData(c.cnh_validade):'—'}</td><td>${cnhBadge(c.cnh_validade)}</td><td style="display:flex;gap:4px;flex-wrap:wrap"><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="verPerfilClienteById('${c.id}')">👤 Perfil</button><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="abrirChat('${c.id}')">💬 Chat</button><button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="editarCliente('${c.id}')">✏️ Editar</button></td></tr>`;
   }).join(''):'<tr class="empty-row"><td colspan="6">Nenhum cliente encontrado</td></tr>';
 }
 
@@ -1264,6 +1312,90 @@ async function salvarCliente(){
   }finally{
     if(btn){btn.disabled=false;btn.textContent='✓ Salvar';}
   }
+}
+
+// Modal perfil do cliente com histórico de contratos
+async function verPerfilCliente(){
+  if(!activeChatId) return;
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c){ notify('Selecione um cliente cadastrado','error'); return; }
+
+  // Busca locações do cliente
+  const {data:locs} = await sb.from('locacoes')
+    .select('*,veiculos(marca,modelo,placa)')
+    .eq('cliente_id', c.id)
+    .order('created_at',{ascending:false});
+
+  const cnhStatus = c.cnh_validade
+    ? (new Date(c.cnh_validade) < new Date() ? '🔴 Vencida' : '🟢 Válida até '+fmtData(c.cnh_validade))
+    : '—';
+
+  let html = `<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+    <div class="cavatar" style="width:52px;height:52px;font-size:18px;background:rgba(245,166,35,.12);color:var(--accent)">
+      ${(c.nome||'?').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase()}
+    </div>
+    <div>
+      <div style="font-size:16px;font-weight:700">${c.nome}</div>
+      <div style="font-size:12px;color:var(--muted)">${c.email||'sem email'}</div>
+    </div>
+    <button class="btn btn-ghost" style="margin-left:auto;font-size:12px" onclick="editarCliente('${c.id}');closeModal('perfil-cliente')">✏️ Editar</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div style="background:var(--bg3);padding:10px;border-radius:8px">
+      <div style="font-size:10px;color:var(--muted2);margin-bottom:3px">CPF</div>
+      <div style="font-size:13px">${c.cpf||'—'}</div>
+    </div>
+    <div style="background:var(--bg3);padding:10px;border-radius:8px">
+      <div style="font-size:10px;color:var(--muted2);margin-bottom:3px">Telefone</div>
+      <div style="font-size:13px">${c.telefone||'—'}</div>
+    </div>
+    <div style="background:var(--bg3);padding:10px;border-radius:8px">
+      <div style="font-size:10px;color:var(--muted2);margin-bottom:3px">CNH</div>
+      <div style="font-size:13px">${c.cnh||'—'}</div>
+    </div>
+    <div style="background:var(--bg3);padding:10px;border-radius:8px">
+      <div style="font-size:10px;color:var(--muted2);margin-bottom:3px">Validade CNH</div>
+      <div style="font-size:13px">${cnhStatus}</div>
+    </div>
+  </div>
+  ${c.endereco?`<div style="background:var(--bg3);padding:10px;border-radius:8px;margin-bottom:16px"><div style="font-size:10px;color:var(--muted2);margin-bottom:3px">Endereço</div><div style="font-size:13px">${c.endereco}</div></div>`:''}
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:10px">
+    📋 Histórico de Contratos (${locs?.length||0})
+  </div>`;
+
+  if(locs && locs.length > 0){
+    html += locs.map(l=>{
+      const dias = Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000);
+      const cor = l.status==='ativa'?'var(--green)':l.status==='encerrada'?'var(--blue)':'var(--red)';
+      return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:13px;font-weight:600">🚗 ${l.veiculos?.marca||''} ${l.veiculos?.modelo||''}</div>
+          <span style="font-size:11px;color:${cor};font-weight:600">${l.status?.toUpperCase()}</span>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">📅 ${fmtData(l.data_inicio)} → ${fmtData(l.data_fim)} (${dias} dias)</div>
+        <div style="font-size:12px;color:var(--muted)">💰 R$ ${(l.diaria||0).toFixed(2)}/dia · Total: R$ ${(l.total||0).toFixed(2)}</div>
+        ${l.veiculos?.placa?`<div style="font-size:11px;color:var(--muted2);margin-top:2px">Placa: ${l.veiculos.placa}</div>`:''}
+      </div>`;
+    }).join('');
+  } else {
+    html += '<div style="text-align:center;padding:20px;color:var(--muted2);font-size:13px">Nenhum contrato registrado ainda.</div>';
+  }
+
+  document.getElementById('perfil-cliente-body').innerHTML = html;
+  document.getElementById('m-perfil-cliente').classList.add('show');
+}
+
+// Abre perfil do cliente por ID (usado na tabela de clientes)
+async function verPerfilClienteById(id){
+  const c = allClientes.find(x=>x.id===id);
+  if(!c) return;
+  // Temporariamente seta activeChatId para reusar verPerfilCliente
+  const anterior = activeChatId;
+  activeChatId = id;
+  await verPerfilCliente();
+  // Restaura se não foi abrir chat
+  if(!document.getElementById('page-chat').classList.contains('active'))
+    activeChatId = anterior;
 }
 
 function editarCliente(id){
@@ -1420,13 +1552,33 @@ async function registrarContrato(){
   const fim=document.getElementById('c-fim')?.value;
   const dia=parseFloat(document.getElementById('c-dia')?.value)||0;
   const km=parseInt(document.getElementById('c-km')?.value)||0;
-  const obs=document.getElementById('c-obs')?.value;
+  const obs=document.getElementById('c-obs')?.value||'';
   if(!cid||!vid||!ini||!fim){notify('Preencha todos os campos','error');return;}
-  const {error}=await sb.from('locacoes').insert({veiculo_id:vid,cliente_id:cid,data_inicio:ini,data_fim:fim,km_inicial:km,diaria:dia,total:totalVal,observacoes:obs,criado_por:currentUser.id});
+  const {data:locSalva,error}=await sb.from('locacoes').insert({
+    veiculo_id:vid,cliente_id:cid,data_inicio:ini,data_fim:fim,
+    km_inicial:km,diaria:dia,total:totalVal,observacoes:obs,
+    criado_por:currentUser?.id
+  }).select().single();
   if(error){notify('Erro: '+error.message,'error');return;}
   await sb.from('veiculos').update({status:'alugado'}).eq('id',vid);
   notify('Contrato registrado! Veículo marcado como alugado.','success');
   await carregarTudo();
+  // Envia automaticamente pelo WhatsApp se cliente tiver telefone
+  const c = allClientes.find(x=>x.id===cid);
+  const v = allVeiculos.find(x=>x.id===vid);
+  if(c?.telefone){
+    const txt = '📄 *CONTRATO DE LOCAÇÃO — FleetPro*\n\n'
+      + '👤 Cliente: '+c.nome+'\n📋 CPF: '+c.cpf+'\n'
+      + '\n🚗 Veículo: '+(v?.marca||'')+' '+(v?.modelo||'')+' — '+(v?.placa||'')+'\n'
+      + '📅 Período: '+fmtData(ini)+' a '+fmtData(fim)+' ('+dias+' dias)\n'
+      + '💰 Diária: R$ '+dia.toFixed(2)+' · Total: R$ '+totalVal.toFixed(2)+'\n'
+      + '\n✅ Contrato registrado no sistema FleetPro.\n_Equipe FleetPro 🚗🏍️_';
+    try{
+      await evoSendText(c.telefone, txt);
+      await salvarMsgDB(cid, c.telefone, txt, 'text', 'saida', null);
+      notify('Contrato também enviado pelo WhatsApp! ✓','success');
+    }catch(e){ console.warn('WPP contrato:', e.message); }
+  }
 }
 
 // ══ CALENDÁRIO ══
@@ -1489,18 +1641,12 @@ function fmtPhone(tel){
 // ── STATUS WPP ──
 function setWppStatus(ok, msg){
   wppOk = ok;
+  const dot = document.getElementById('wpp-dot');
+  const txt = document.getElementById('wpp-status-txt');
   const badge = document.getElementById('wpp-status-badge');
-  if(badge) badge.innerHTML = ok
-    ? '<span style="color:var(--green)">🟢 '+msg+'</span>'
-    : '<span style="color:var(--red)">🔴 '+msg+'</span>';
-  const okBadge = document.getElementById('wpp-ok-badge');
-  if(okBadge){
-    okBadge.style.background = ok ? 'rgba(34,197,94,.08)' : 'rgba(239,68,68,.08)';
-    okBadge.style.borderColor = ok ? 'rgba(34,197,94,.2)' : 'rgba(239,68,68,.2)';
-    okBadge.innerHTML = ok
-      ? '<div class="wdot"></div>WhatsApp conectado'
-      : '<div class="wdot" style="background:var(--red)"></div><span style="color:var(--red)">Desconectado</span>';
-  }
+  if(dot) dot.style.background = ok ? 'var(--green)' : 'var(--red)';
+  if(txt){ txt.textContent = ok ? 'WhatsApp conectado' : (msg||'Desconectado'); txt.style.color = ok ? 'var(--green)' : 'var(--red)'; }
+  if(badge){ badge.style.background = ok ? 'rgba(34,197,94,.08)' : 'rgba(239,68,68,.08)'; badge.style.borderColor = ok ? 'rgba(34,197,94,.2)' : 'rgba(239,68,68,.2)'; }
 }
 
 // ── SSE ──
@@ -1706,18 +1852,30 @@ function renderMsgItem(m){
 
 async function renderChatMsgs(cid){
   const area = document.getElementById('chat-msgs');
-  area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:20px">⏳ Carregando...</div>';
-  const dbMsgs = await carregarMsgsDB(cid);
-  // Mensagens SSE/locais em memória (todas, não só _local)
-  const memMsgs = (chatMsgs[cid]||[]);
-  // Merge: banco + memória, deduplicando por created_at+texto
-  const visto = new Set(dbMsgs.map(m=>m.created_at+'|'+(m.texto||'')));
-  const extras = memMsgs.filter(m=>!visto.has((m.created_at||'')+'|'+(m.texto||m.text||'')));
-  const todas = [...dbMsgs,...extras].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
-  if(todas.length){
-    area.innerHTML = todas.map(renderMsgItem).join('');
+  if(!area) return;
+  // Mostra mensagens da memória imediatamente (sem spinner)
+  const memMsgs = chatMsgs[cid]||[];
+  if(memMsgs.length){
+    area.innerHTML = memMsgs.map(renderMsgItem).join('');
+    area.scrollTop = area.scrollHeight;
   } else {
-    area.innerHTML = '<div data-placeholder style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda.</div>';
+    area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:20px">⏳ Carregando...</div>';
+  }
+  // Busca do banco em paralelo
+  try{
+    const dbMsgs = await carregarMsgsDB(cid);
+    const visto = new Set(dbMsgs.map(m=>m.created_at+'|'+(m.texto||'')));
+    const extras = memMsgs.filter(m=>!visto.has((m.created_at||'')+'|'+(m.texto||m.text||'')));
+    const todas = [...dbMsgs,...extras].sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0));
+    if(todas.length){
+      area.innerHTML = todas.map(renderMsgItem).join('');
+    } else {
+      area.innerHTML = '<div data-placeholder style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda.</div>';
+    }
+  }catch(e){
+    console.error('renderChatMsgs:', e);
+    if(!memMsgs.length)
+      area.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted2);padding:30px">Sem mensagens ainda.</div>';
   }
   area.scrollTop = area.scrollHeight;
 }
@@ -1792,31 +1950,7 @@ function abrirChat(cid){
   if(!document.getElementById('page-chat').classList.contains('active')) goPage('chat');
 }
 
-async function sendMsg(){
-  if(!activeChatId){ notify('Selecione um contato','error'); return; }
-  const c = allClientes.find(x=>x.id===activeChatId);
-  if(!c?.telefone){ notify('Cliente sem telefone cadastrado','error'); return; }
-  const inp = document.getElementById('chat-msg-input');
-  const texto = inp.value.trim();
-  if(!texto) return;
 
-  // Exibe localmente imediato
-  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
-  chatMsgs[activeChatId].push({texto, tipo:'text', direcao:'saida', out:true,
-    created_at:new Date().toISOString(), time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}), _local:true});
-  inp.value='';
-  renderChatMsgs(activeChatId);
-  renderChatContacts();
-
-  // Envia pelo WhatsApp e salva no DB
-  try{
-    await evoSendText(c.telefone, texto);
-    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida', null);
-    notify('Mensagem enviada ✓','success');
-  }catch(e){
-    notify('Erro ao enviar: '+e.message,'error');
-  }
-}
 
 async function enviarContrato(){
   if(!activeChatId){ notify('Selecione um contato','error'); return; }
@@ -1833,7 +1967,352 @@ async function enviarContrato(){
   }
 }
 
+// Envia contrato do cliente ativo no chat
+async function verPerfilCliente(cid){
+  if(!cid) return;
+  const c = allClientes.find(x=>x.id===cid);
+  if(!c){ notify('Cadastre o cliente primeiro','error'); return; }
+  document.getElementById('perfil-cli-titulo').textContent = '👤 '+c.nome;
+  const body = document.getElementById('perfil-cli-body');
+  body.innerHTML = '<div style="padding:16px;color:var(--muted2);font-size:13px">⏳ Carregando...</div>';
+  document.getElementById('m-perfil-cliente').classList.add('show');
+  // Busca locações do cliente
+  const {data:locs} = await sb.from('locacoes')
+    .select('*,veiculos(marca,modelo,placa)')
+    .eq('cliente_id',c.id)
+    .order('created_at',{ascending:false});
+  const fone = c.telefone||'—';
+  const locsHtml = (locs||[]).length ? (locs||[]).map(l=>{
+    const dias = l.data_inicio&&l.data_fim ? Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000) : '?';
+    const badge = l.status==='ativa'?'<span class="badge badge-green">Ativa</span>':l.status==='encerrada'?'<span class="badge badge-blue">Encerrada</span>':'<span class="badge badge-red">Cancelada</span>';
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-weight:600;font-size:13px">🚗 ${l.veiculos?.marca||''} ${l.veiculos?.modelo||''} — ${l.veiculos?.placa||''}</span>${badge}
+      </div>
+      <div style="font-size:12px;color:var(--muted)">📅 ${fmtData(l.data_inicio)} a ${fmtData(l.data_fim)} · ${dias} dias</div>
+      <div style="font-size:12px;color:var(--muted)">💰 R$ ${(l.diaria||0).toFixed(2)}/dia · Total: R$ ${(l.total||0).toFixed(2)}</div>
+      ${l.km_inicial?`<div style="font-size:12px;color:var(--muted)">🔑 Km inicial: ${l.km_inicial}${l.km_final?' · Km final: '+l.km_final:''}</div>`:''}
+      <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;margin-top:8px" onclick="enviarContratoEspecifico('${c.id}','${l.id}')">📤 Enviar pelo WhatsApp</button>
+    </div>`;
+  }).join('') : '<div style="color:var(--muted2);font-size:13px;padding:8px 0">Nenhum contrato registrado ainda.</div>';
+
+  body.innerHTML = `
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><div style="font-size:11px;color:var(--muted2)">TELEFONE</div><div style="font-size:13px">${fone}</div></div>
+      <div><div style="font-size:11px;color:var(--muted2)">CPF</div><div style="font-size:13px">${c.cpf||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--muted2)">EMAIL</div><div style="font-size:13px">${c.email||'—'}</div></div>
+      <div><div style="font-size:11px;color:var(--muted2)">CNH</div><div style="font-size:13px">${c.cnh||'—'} ${cnhBadge(c.cnh_validade)}</div></div>
+      ${c.endereco?`<div style="grid-column:1/-1"><div style="font-size:11px;color:var(--muted2)">ENDEREÇO</div><div style="font-size:13px">${c.endereco}</div></div>`:''}
+    </div>
+    <div style="padding:16px 20px">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:12px">HISTÓRICO DE LOCAÇÕES (${(locs||[]).length})</div>
+      ${locsHtml}
+    </div>
+    <div style="padding:0 20px 4px;display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="editarCliente('${c.id}');closeModal('perfil-cliente')">✏️ Editar cadastro</button>
+      <button class="btn btn-primary" style="flex:1" onclick="abrirChat('${c.id}');closeModal('perfil-cliente')">💬 Abrir chat</button>
+    </div>`;
+}
+
+async function enviarContratoEspecifico(clienteId, locacaoId){
+  const c = allClientes.find(x=>x.id===clienteId);
+  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
+  const {data:locs} = await sb.from('locacoes').select('*,veiculos(marca,modelo,placa)').eq('id',locacaoId).single();
+  const l = locs;
+  if(!l){ notify('Locação não encontrada','error'); return; }
+  const dias = Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000);
+  const txt = '📄 *CONTRATO DE LOCAÇÃO — FleetPro*\n\n'
+    + '👤 Cliente: '+c.nome+'\n📋 CPF: '+c.cpf+'\n'
+    + '\n🚗 '+l.veiculos?.marca+' '+l.veiculos?.modelo+' — '+l.veiculos?.placa+'\n'
+    + '📅 '+fmtData(l.data_inicio)+' a '+fmtData(l.data_fim)+' ('+dias+' dias)\n'
+    + '💰 R$ '+((l.diaria||0).toFixed(2))+'/dia · Total: R$ '+((l.total||0).toFixed(2))+'\n'
+    + '\n✅ Contrato registrado no sistema FleetPro.\n_Equipe FleetPro 🚗🏍️_';
+  try{
+    await evoSendText(c.telefone, txt);
+    await salvarMsgDB(clienteId, c.telefone, txt, 'text', 'saida', null);
+    notify('Contrato enviado pelo WhatsApp! ✓','success');
+  }catch(e){ notify('Erro: '+e.message,'error'); }
+}
+
+async function enviarContratoChat(){
+  if(!activeChatId){ notify('Selecione um contato primeiro','error'); return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c){ notify('Contato sem cadastro — cadastre o cliente primeiro','error'); return; }
+  if(!c.telefone){ notify('Cliente sem telefone cadastrado','error'); return; }
+  // Busca última locação desse cliente
+  const {data:locs} = await sb.from('locacoes')
+    .select('*,veiculos(marca,modelo,placa)')
+    .eq('cliente_id',c.id)
+    .order('created_at',{ascending:false})
+    .limit(1);
+  const loc = locs?.[0];
+  let texto = '📄 *CONTRATO DE LOCAÇÃO — FleetPro*\n\n';
+  texto += `👤 Cliente: ${c.nome}\n`;
+  texto += `📋 CPF: ${c.cpf}\n`;
+  if(loc){
+    texto += `\n🚗 Veículo: ${loc.veiculos?.marca} ${loc.veiculos?.modelo} — ${loc.veiculos?.placa}\n`;
+    texto += `📅 Período: ${fmtData(loc.data_inicio)} a ${fmtData(loc.data_fim)}\n`;
+    texto += `💰 Diária: R$ ${(loc.diaria||0).toFixed(2)} · Total: R$ ${(loc.total||0).toFixed(2)}\n`;
+  }
+  texto += `\n✅ Contrato registrado no sistema FleetPro.\n_Equipe FleetPro 🚗🏍️_`;
+  try{
+    await evoSendText(c.telefone, texto);
+    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida', null);
+    notify('Contrato enviado pelo WhatsApp! ✓','success');
+    renderChatMsgs(activeChatId);
+  }catch(e){
+    notify('Erro ao enviar: '+e.message,'error');
+  }
+}
+
+// Arquivo selecionado para envio
+let _mediaFile = null, _mediaType = '';
+function selecionarArquivo(input, tipo){
+  const file = input.files[0]; if(!file) return;
+  _mediaFile = file; _mediaType = tipo;
+  const prev = document.getElementById('chat-file-preview');
+  const name = document.getElementById('chat-file-name');
+  if(prev){ prev.style.display='flex'; }
+  if(name) name.textContent = (tipo==='image'?'🖼 ':'🎵 ') + file.name;
+}
+function cancelarArquivo(){
+  _mediaFile=null; _mediaType='';
+  document.getElementById('chat-file-preview').style.display='none';
+  document.getElementById('chat-file-input').value='';
+  document.getElementById('chat-audio-input').value='';
+}
+async function enviarArquivo(){
+  if(!_mediaFile||!activeChatId){ return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
+  try{
+    const cfg = JSON.parse(localStorage.getItem(EVO_CFG_KEY)||'{}');
+    const num = fmtPhone(c.telefone);
+    const fd = new FormData();
+    fd.append('number', num);
+    fd.append('options', JSON.stringify({delay:1000}));
+    const endpoint = _mediaType==='audio' ? 'sendWhatsAppAudio' : 'sendMedia';
+    fd.append('media', _mediaFile);
+    const r = await fetch(cfg.apiUrl+'/message/'+endpoint+'/'+cfg.instancia,{
+      method:'POST', headers:{'apikey':cfg.apiKey}, body:fd
+    });
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    await salvarMsgDB(activeChatId, c.telefone, _mediaFile.name, _mediaType==='audio'?'audio':'image', 'saida', null);
+    notify('Arquivo enviado! ✓','success');
+    cancelarArquivo();
+    renderChatMsgs(activeChatId);
+  }catch(e){
+    notify('Erro ao enviar arquivo: '+e.message,'error');
+  }
+}
+
+// Envia contrato resumido pelo WhatsApp direto do chat
+async function enviarContratoWpp(){
+  if(!activeChatId){ notify('Selecione um contato primeiro','error'); return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+  if(!c){ notify('Cliente não encontrado','error'); return; }
+  if(!c.telefone){ notify('Cliente sem telefone cadastrado','error'); return; }
+
+  // Busca última locação ativa do cliente
+  const {data:locs} = await sb.from('locacoes')
+    .select('*,veiculos(marca,modelo,placa)')
+    .eq('cliente_id', c.id)
+    .eq('status','ativa')
+    .order('created_at',{ascending:false})
+    .limit(1);
+
+  let texto = '';
+  if(locs && locs.length > 0){
+    const l = locs[0];
+    const dias = Math.ceil((new Date(l.data_fim)-new Date(l.data_inicio))/86400000);
+    texto = `📄 *CONTRATO DE LOCAÇÃO*
+
+`
+      +`👤 *Cliente:* ${c.nome}
+`
+      +`📋 *CPF:* ${c.cpf}
+`
+      +`🚗 *Veículo:* ${l.veiculos?.marca} ${l.veiculos?.modelo} — ${l.veiculos?.placa}
+`
+      +`📅 *Período:* ${fmtData(l.data_inicio)} a ${fmtData(l.data_fim)} (${dias} dias)
+`
+      +`💰 *Diária:* R$ ${(l.diaria||0).toFixed(2)}
+`
+      +`💳 *Total:* R$ ${(l.total||0).toFixed(2)}
+
+`
+      +`✅ Ao retirar o veículo, o cliente declara estar ciente dos termos.
+
+`
+      +`_FleetPro Locadora 🚗🏍️_`;
+  } else {
+    texto = `📄 *PROPOSTA FLEETPRO*
+
+`
+      +`Olá, ${c.nome}! Temos veículos disponíveis para você.
+`
+      +`Carros a partir de R$ 120/dia 🚗
+`
+      +`Motos a partir de R$ 60/dia 🏍️
+
+`
+      +`_FleetPro Locadora_`;
+  }
+
+  try{
+    await evoSendText(c.telefone, texto);
+    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida', null);
+    // Exibe no chat local
+    if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+    chatMsgs[activeChatId].push({texto, tipo:'text', direcao:'saida', out:true, created_at:new Date().toISOString()});
+    renderChatMsgs(activeChatId);
+    notify('Contrato enviado pelo WhatsApp! ✓','success');
+  }catch(e){
+    notify('Erro ao enviar: '+e.message,'error');
+  }
+}
+
+// Enviar arquivo (imagem, áudio, documento)
+let _mediaFile = null, _mediaType = '';
+function enviarArquivo(input, tipo){
+  const file = input.files[0]; if(!file) return;
+  _mediaFile = file; _mediaType = tipo;
+  const prev = document.getElementById('media-preview');
+  const txt  = document.getElementById('media-preview-txt');
+  if(prev && txt){
+    prev.style.display = 'flex';
+    txt.textContent = (tipo==='image'?'🖼️':tipo==='audio'?'🎵':'📎')+' '+file.name+' ('+Math.round(file.size/1024)+'KB) — clique Enviar';
+  }
+  input.value = '';
+}
+
+function cancelarMidia(){
+  _mediaFile = null; _mediaType = '';
+  const prev = document.getElementById('media-preview');
+  if(prev) prev.style.display = 'none';
+}
+
+async function sendMsg(){
+  if(!activeChatId){ notify('Selecione um contato','error'); return; }
+  const c = allClientes.find(x=>x.id===activeChatId);
+
+  // Se tem mídia na fila, envia arquivo
+  if(_mediaFile){
+    await _enviarMidiaWpp(c);
+    return;
+  }
+
+  if(!c?.telefone){ notify('Cliente sem telefone cadastrado','error'); return; }
+  const inp = document.getElementById('chat-msg-input');
+  const texto = inp.value.trim();
+  if(!texto) return;
+
+  if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+  chatMsgs[activeChatId].push({texto, tipo:'text', direcao:'saida', out:true,
+    created_at:new Date().toISOString(), time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+  inp.value='';
+  renderChatMsgs(activeChatId);
+  renderChatContacts();
+
+  try{
+    await evoSendText(c.telefone, texto);
+    await salvarMsgDB(activeChatId, c.telefone, texto, 'text', 'saida', null);
+    notify('Mensagem enviada ✓','success');
+  }catch(e){
+    notify('Erro ao enviar: '+e.message,'error');
+  }
+}
+
+async function _enviarMidiaWpp(c){
+  if(!c?.telefone){ notify('Cliente sem telefone','error'); return; }
+  notify('Enviando arquivo...','success');
+  try{
+    const cfg = JSON.parse(localStorage.getItem('EVO_WPP_CFG')||localStorage.getItem(EVO_CFG_KEY)||'{}');
+    if(!cfg.apiUrl||!cfg.apiKey) throw new Error('Evolution API não configurada');
+    const num = fmtPhone(c.telefone);
+    const reader = new FileReader();
+    reader.onload = async(e)=>{
+      const base64 = e.target.result.split(',')[1];
+      const mediaType = _mediaType;
+      const fileName  = _mediaFile.name;
+      const mimeType  = _mediaFile.type;
+      let endpoint='', body={};
+      if(mediaType==='image'){
+        endpoint='sendMedia'; body={number:num,mediatype:'image',media:base64,caption:''};
+      } else if(mediaType==='audio'){
+        endpoint='sendWhatsAppAudio'; body={number:num,audio:base64,encoding:true};
+      } else {
+        endpoint='sendMedia'; body={number:num,mediatype:'document',media:base64,fileName,caption:''};
+      }
+      const r = await fetch(cfg.apiUrl+'/message/'+endpoint+'/'+cfg.instancia,{
+        method:'POST',
+        headers:{'apikey':cfg.apiKey,'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
+      if(!r.ok){ const t=await r.text(); throw new Error(t); }
+      // Salva no chat local
+      if(!chatMsgs[activeChatId]) chatMsgs[activeChatId]=[];
+      chatMsgs[activeChatId].push({texto:fileName||'Arquivo', tipo:mediaType, direcao:'saida', out:true, created_at:new Date().toISOString()});
+      await salvarMsgDB(activeChatId, c.telefone, fileName||'Arquivo', mediaType, 'saida', null);
+      cancelarMidia();
+      renderChatMsgs(activeChatId);
+      notify('Arquivo enviado ✓','success');
+    };
+    reader.readAsDataURL(_mediaFile);
+  }catch(err){
+    notify('Erro: '+err.message,'error');
+  }
+}
+
 // Upload de arquivo
+// ── GRAVAÇÃO DE ÁUDIO ──
+let mediaRecorder = null, audioChunks = [], gravando = false;
+
+async function toggleGravarAudio(){
+  const btn = document.getElementById('btn-mic');
+  if(!gravando){
+    // Inicia gravação
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      audioChunks = [];
+      mediaRecorder = new MediaRecorder(stream);
+      mediaRecorder.ondataavailable = e=>{ if(e.data.size>0) audioChunks.push(e.data); };
+      mediaRecorder.onstop = async ()=>{
+        const blob = new Blob(audioChunks,{type:'audio/ogg;codecs=opus'});
+        const file = new File([blob],'audio.ogg',{type:'audio/ogg'});
+        // Para o stream
+        stream.getTracks().forEach(t=>t.stop());
+        // Envia
+        const reader = new FileReader();
+        reader.onload = e=>{
+          mediaQueue = {file, tipo:'audio', base64:e.target.result.split(',')[1]};
+          const prev = document.getElementById('media-preview');
+          const prevTxt = document.getElementById('media-preview-txt');
+          if(prev) prev.style.display='flex';
+          if(prevTxt) prevTxt.textContent='🎙️ Áudio gravado ('+Math.round(blob.size/1024)+'kb) — clique Enviar';
+        };
+        reader.readAsDataURL(blob);
+        btn.textContent='🎙️';
+        btn.style.background='var(--bg3)';
+        btn.style.borderColor='var(--border2)';
+        gravando = false;
+      };
+      mediaRecorder.start();
+      gravando = true;
+      btn.textContent='⏹️';
+      btn.style.background='rgba(239,68,68,.15)';
+      btn.style.borderColor='var(--red)';
+      notify('Gravando... Clique ⏹️ para parar','success');
+    }catch(e){
+      notify('Erro ao acessar microfone: '+e.message,'error');
+    }
+  } else {
+    // Para gravação
+    if(mediaRecorder && mediaRecorder.state!=='inactive') mediaRecorder.stop();
+    gravando = false;
+  }
+}
+
 let mediaQueue = null;
 function selecionarArquivo(input, tipo){
   const file = input.files[0]; if(!file) return;
